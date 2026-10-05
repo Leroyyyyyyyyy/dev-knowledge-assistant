@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class RequestModel(BaseModel):
@@ -90,3 +90,30 @@ class AnswerResponse(BaseModel):
     index_version: str
     model: str
     prompt_version: str
+
+
+FeedbackReason = Literal["wrong_answer", "incomplete", "wrong_citation", "not_relevant", "other"]
+
+
+class FeedbackRequest(RequestModel):
+    run_id: str = Field(pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+    resolved: bool
+    # Why it did not help. Only meaningful, and only accepted, when resolved is false.
+    reason: FeedbackReason | None = None
+    comment: str | None = Field(default=None, max_length=1000)
+
+    @model_validator(mode="after")
+    def reason_only_when_unresolved(self) -> "FeedbackRequest":
+        if self.resolved and self.reason is not None:
+            raise ValueError("reason is only accepted when resolved is false")
+        return self
+
+
+class FeedbackResponse(BaseModel):
+    run_id: str
+    answer_id: str
+    resolved: bool
+    reason: FeedbackReason | None
+    comment: str | None
+    created_at: str
+    updated_at: str

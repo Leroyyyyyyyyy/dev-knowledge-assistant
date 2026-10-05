@@ -89,6 +89,21 @@ MIGRATIONS = {
     CREATE UNIQUE INDEX one_accepted_answer_per_run
         ON answers (run_id) WHERE validation = 'accepted';
     """,
+    3: """
+    -- What the user said, kept apart from what the model claimed (answers.status).
+    -- One row per run: a later submission replaces the earlier one.
+    CREATE TABLE feedback (
+        run_id      TEXT PRIMARY KEY REFERENCES runs (run_id),
+        answer_id   TEXT NOT NULL REFERENCES answers (answer_id),
+        resolved    INTEGER NOT NULL CHECK (resolved IN (0, 1)),
+        reason      TEXT CHECK (reason IN ('wrong_answer', 'incomplete', 'wrong_citation', 'not_relevant', 'other')),
+        comment     TEXT,
+        request_id  TEXT NOT NULL,
+        created_at  TEXT NOT NULL,
+        updated_at  TEXT NOT NULL,
+        CHECK (resolved = 0 OR reason IS NULL)
+    );
+    """,
 }
 
 SCHEMA_VERSION = max(MIGRATIONS)

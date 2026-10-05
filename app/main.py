@@ -20,7 +20,16 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.answers import AnswerConflict, AnswerRejected, RunExpired, RunNotFound, submit_answer
-from app.api.schemas import AnswerRequest, AnswerResponse, ErrorResponse, RetrieveRequest, RetrieveResponse
+from app.api.schemas import (
+    AnswerRequest,
+    AnswerResponse,
+    ErrorResponse,
+    FeedbackRequest,
+    FeedbackResponse,
+    RetrieveRequest,
+    RetrieveResponse,
+)
+from app.feedback import NoAnswerForRun, submit_feedback
 from app.indexing.build import collection_name
 from app.retrieval.encoder import Encoder
 from app.retrieval.service import EncoderMismatch, NoActiveIndex, UnknownRepo, retrieve
@@ -217,6 +226,33 @@ def create_app(
             raise ApiError(422, exc.code, exc.message) from exc
         except AnswerConflict as exc:
             raise ApiError(409, "ANSWER_ALREADY_ACCEPTED", str(exc)) from exc
+
+    @app.post(
+        "/api/feedback",
+        response_model=FeedbackResponse,
+        dependencies=[Depends(require_service_token)],
+        responses={401: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}, 422: {"model": ErrorResponse}},
+    )
+    def feedback_endpoint(
+        body: FeedbackRequest,
+        request: Request,
+        connection: sqlite3.Connection = Depends(get_db),
+    ) -> dict:
+        """Record whether the user's problem was solved. Replaces earlier feedback for the same run."""
+        comment = body.comment.strip() if body.comment else None
+        try:
+            return submit_feedback(
+                connection,
+                run_id=body.run_id,
+                resolved=body.resolved,
+                reason=body.reason,
+                comment=comment or None,
+                request_id=request.state.request_id,
+            )
+        except RunNotFound as exc:
+            raise ApiError(404, "RUN_NOT_FOUND", str(exc)) from exc
+        except NoAnswerForRun as exc:
+            raise ApiError(409, "NO_ANSWER_FOR_RUN", str(exc)) from exc
 
     return app
 

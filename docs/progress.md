@@ -101,7 +101,14 @@ M2：Dify 问答流程。先做 `/api/answers`（只接受本次检索返回过�
 
 **2026-10-05 真实环境**：本机 v1 数据库启动时升级到 v2，原有的 4 条运行记录保留。真实检索之后：指向 main 分支的链接 → 422 `FABRICATED_LINK`；编造的 chunk ID → 422 `UNKNOWN_CITATION`；合规答案 → 200；同一答案重试 → 200，`answer_id` 相同。三次提交都写进了 `answers` 表。**这里的答案是手写的，还没有接真实的生成模型。**
 
+### 已完成：`POST /api/feedback`（2026-10-05）
+
+- **输入**：`run_id`、`resolved`（true/false）、`reason`（只在 `resolved=false` 时可填：`wrong_answer` / `incomplete` / `wrong_citation` / `not_relevant` / `other`）、`comment`（可选，最长 1000 字）。
+- **关联**：run 必须存在（否则 404），而且必须有一条被接受的答案（否则 409 `NO_ANSWER_FOR_RUN`），因为反馈针对的是用户实际看到的答案。被拒绝的提交不算。
+- **每个 run 只保留一条反馈**：再次提交会覆盖，`created_at` 保留，`updated_at` 更新。用户改主意或 Dify 重试，都不会多出记录。
+- **和模型的判断分开存**：模型自报的 `answered` 存在 `answers` 表，用户的 `resolved` 存在 `feedback` 表（schema v3）。「模型说答了，用户说没用」正是评测要找的情况。
+- **验证**：共 53 个测试，其中 12 个针对 feedback。真实环境：本机数据库启动时升级到 v3；对之前被接受的答案，先提交「已解决」再改成「没解决、引用不对」，库里只留后一条，模型那边的状态仍然是 `answered`；对没有被接受答案的 run 提交，返回 409。
+
 ### 未完成
 
-- `POST /api/feedback`。
 - Dify Chatflow（HTTP 节点 → 生成 → `/api/answers` → 分支展示），以及导出的 DSL。需要 Dify 环境和模型 key。

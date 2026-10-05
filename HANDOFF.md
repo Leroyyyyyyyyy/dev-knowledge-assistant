@@ -4,7 +4,7 @@
 
 ## 1. 当前状态
 
-- **M0 完成，M1 核心完成，M2 进行中**（2026-10-05），详情见 `docs/progress.md`。M2 已完成 `POST /api/answers`（引用校验 + 保存，41 个测试），还差 `/api/feedback` 和 Dify。
+- **M0 完成，M1 核心完成，M2 进行中**（2026-10-05），详情见 `docs/progress.md`。M2 已完成 `POST /api/answers`（引用校验 + 保存）和 `POST /api/feedback`，共 53 个测试；只差 Dify。
 - 检索服务能跑起来：`python -m app.indexing.build` 从固定 commit 构建版本化索引；`uvicorn app.main:app` 提供 `/health`、`/ready`、`/api/retrieve`。25 个自动测试通过，真实 bge-m3 + 两个仓库的端到端已验证（引用链接打开后，行号对应的内容和返回的块逐字一致）。
 - 代码结构：`app/indexing/`（快照、构建）、`app/retrieval/`（chunker、encoder、检索服务）、`app/storage/db.py`（SQLite schema）、`app/api/schemas.py`、`app/main.py`、`app/citations.py`；`config/repos.json`；`evals/`；`tests/`。
 - 本地运行需要 `.env` 里的 `DKA_SERVICE_TOKEN`（`.env` 已 gitignore，模板见 `.env.example`）。`.claude/launch.json` 里有一个名为 `api` 的启动配置，端口 8077。
@@ -67,7 +67,7 @@
 7. **扩大评测集**：19 题每题约 5 个百分点，选不出方案。至少扩到 40 题以上，代码定位以外的题型要补，最好能拿到真实用户的问题。
 8. **多语言 rerank 单变量实验**：bge-m3 + `bge-reranker-v2-m3`（现有的 ms-marco reranker 只支持英文）。
 9. ~~M1 检索服务~~ **核心完成**。剩下的：按仓库分别检索再合并（对应 d08）；进程崩溃后残留的 `building` 记录要能清理（M4 一起做）。
-10. **M2**：~~`POST /api/answers`~~ 已完成。下一步是 `POST /api/feedback`，然后搭 Dify Chatflow（HTTP 节点 → 生成 → 校验 → 展示）。需要用户提供：Dify 环境（已有的，或本地自托管的固定版本）和模型供应商的 key。注意：Dify 跑在容器里，容器内的 `localhost` 不是宿主机（spec §6.2）。
+10. **M2**：~~`/api/answers`、`/api/feedback`~~ 已完成。下一步是搭 Dify Chatflow（HTTP 节点 → 生成 → 校验 → 展示）。需要用户提供：Dify 环境（已有的，或本地自托管的固定版本）和模型供应商的 key。注意：Dify 跑在容器里，容器内的 `localhost` 不是宿主机（spec §6.2）。
 
 ## 7. 约定
 
