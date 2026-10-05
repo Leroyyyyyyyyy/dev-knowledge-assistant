@@ -122,6 +122,36 @@ def is_top_level_boundary(line: str) -> bool:
     return name.isupper() and name.isidentifier()
 
 
+def make_chunk(lines: list[str], start: int, end: int, filepath: str, repo: str) -> dict[str, Any] | None:
+    """
+    One chunk from lines[start:end], or None if those lines are blank.
+
+    The content is stripped, as upstream did, so embeddings and the M0 regression
+    are unchanged. The line numbers are narrowed to the first and last non-blank
+    line, so they match the stripped content. Upstream kept the raw range, which
+    pointed citations past the end of the file (a trailing newline counts as one
+    more line in split("\n")) and before leading blank lines.
+    """
+    chunk_content = "\n".join(lines[start:end]).strip()
+    if not chunk_content:
+        return None
+
+    first = start
+    while not lines[first].strip():
+        first += 1
+    last = end - 1
+    while not lines[last].strip():
+        last -= 1
+
+    return {
+        "content": chunk_content,
+        "filepath": filepath,
+        "start_line": first + 1,
+        "end_line": last + 1,
+        "repo": repo,
+    }
+
+
 def chunk_python(content: str, filepath: str, repo: str) -> list[dict[str, Any]]:
     """Chunk Python files by splitting on top-level definitions and constants."""
     lines = content.split("\n")
@@ -131,31 +161,15 @@ def chunk_python(content: str, filepath: str, repo: str) -> list[dict[str, Any]]
     for i, line in enumerate(lines):
         # Split on top-level definitions (no leading whitespace)
         if i > 0 and is_top_level_boundary(line):
-            chunk_content = "\n".join(lines[current_chunk_start:i]).strip()
-            if chunk_content:
-                chunks.append(
-                    {
-                        "content": chunk_content,
-                        "filepath": filepath,
-                        "start_line": current_chunk_start + 1,
-                        "end_line": i,
-                        "repo": repo,
-                    }
-                )
+            chunk = make_chunk(lines, current_chunk_start, i, filepath, repo)
+            if chunk:
+                chunks.append(chunk)
             current_chunk_start = i
 
     # Don't forget the last chunk
-    chunk_content = "\n".join(lines[current_chunk_start:]).strip()
-    if chunk_content:
-        chunks.append(
-            {
-                "content": chunk_content,
-                "filepath": filepath,
-                "start_line": current_chunk_start + 1,
-                "end_line": len(lines),
-                "repo": repo,
-            }
-        )
+    chunk = make_chunk(lines, current_chunk_start, len(lines), filepath, repo)
+    if chunk:
+        chunks.append(chunk)
 
     return chunks
 
@@ -168,17 +182,9 @@ def chunk_generic(content: str, filepath: str, repo: str) -> list[dict[str, Any]
     i = 0
     while i < len(lines):
         end = min(i + CHUNK_SIZE, len(lines))
-        chunk_content = "\n".join(lines[i:end]).strip()
-        if chunk_content:
-            chunks.append(
-                {
-                    "content": chunk_content,
-                    "filepath": filepath,
-                    "start_line": i + 1,
-                    "end_line": end,
-                    "repo": repo,
-                }
-            )
+        chunk = make_chunk(lines, i, end, filepath, repo)
+        if chunk:
+            chunks.append(chunk)
         i += CHUNK_SIZE - OVERLAP
 
     return chunks

@@ -26,19 +26,26 @@ def load_repos(config_path: Path = REPOS_CONFIG) -> dict[str, dict]:
         return json.load(f)["repos"]
 
 
-def export_commit(repo_id: str, repo: dict) -> Path:
+def export_commit(
+    repo_id: str,
+    repo: dict,
+    snapshot_dir: Path = SNAPSHOT_DIR,
+    base_dir: Path = REPO_ROOT,
+) -> Path:
     """
-    Extract `repo["commit"]` into data/snapshots/<repo_id>@<commit> and return that path.
+    Extract `repo["commit"]` into <snapshot_dir>/<repo_id>@<commit> and return that path.
+
+    `repo["checkout"]` is resolved against `base_dir`; an absolute path is used as is.
 
     Reuses a complete snapshot if one exists. Paths in `repo["exclude"]` are removed
     after extraction, so the index is "this commit minus these paths" and nothing else.
     """
     commit = repo["commit"]
-    dest = SNAPSHOT_DIR / f"{repo_id}@{commit}"
+    dest = snapshot_dir / f"{repo_id}@{commit}"
     if (dest / COMPLETE_MARKER).exists():
         return dest
 
-    checkout = (REPO_ROOT / repo["checkout"]).resolve()
+    checkout = (base_dir / repo["checkout"]).resolve()
     if not (checkout / ".git").exists():
         raise FileNotFoundError(f"{repo_id}: no git checkout at {repo['checkout']}; clone {repo['remote']}")
 
