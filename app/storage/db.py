@@ -104,6 +104,11 @@ MIGRATIONS = {
         CHECK (resolved = 0 OR reason IS NULL)
     );
     """,
+    4: """
+    -- The chunk text as returned, so /api/answers can accept a URL that the
+    -- answer quotes verbatim from a cited chunk (e.g. a docs URL in a README).
+    ALTER TABLE run_chunks ADD COLUMN content TEXT;
+    """,
 }
 
 SCHEMA_VERSION = max(MIGRATIONS)

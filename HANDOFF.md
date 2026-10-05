@@ -4,7 +4,7 @@
 
 ## 1. 当前状态
 
-- **M0 完成，M1 核心完成，M2 进行中**（2026-10-05），详情见 `docs/progress.md`。M2 已完成 `POST /api/answers`（引用校验 + 保存）和 `POST /api/feedback`，共 53 个测试；只差 Dify。
+- **M0 完成，M1 核心完成，M2 进行中**（2026-10-05），详情见 `docs/progress.md`。M2 已完成 `/api/answers`、`/api/feedback`，以及 Dify Chatflow（`workflows/dify-chatflow.yml`，真实环境测过 10 个用例，见 `docs/progress.md`）。共 55 个测试。M2 剩下：澄清步骤、把反馈接进 Dify、重新导入后完整跑一次。
 - 检索服务能跑起来：`python -m app.indexing.build` 从固定 commit 构建版本化索引；`uvicorn app.main:app` 提供 `/health`、`/ready`、`/api/retrieve`。25 个自动测试通过，真实 bge-m3 + 两个仓库的端到端已验证（引用链接打开后，行号对应的内容和返回的块逐字一致）。
 - 代码结构：`app/indexing/`（快照、构建）、`app/retrieval/`（chunker、encoder、检索服务）、`app/storage/db.py`（SQLite schema）、`app/api/schemas.py`、`app/main.py`、`app/citations.py`；`config/repos.json`；`evals/`；`tests/`。
 - 本地运行需要 `.env` 里的 `DKA_SERVICE_TOKEN`（`.env` 已 gitignore，模板见 `.env.example`）。`.claude/launch.json` 里有一个名为 `api` 的启动配置，端口 8077。
@@ -38,6 +38,8 @@
 - bge-m3 在 MPS 上不能用大批次编码长块：一批会补齐到最长块的长度，显存吃紧后进程直接卡死（NOTES 11）。demo20 已用 `BATCH_SIZE_OVERRIDES` 改成每批 1 块；`demo20_retrieval.py` 写完报告后用 `os._exit(0)` 退出。
 - SQLite schema 有版本号（`PRAGMA user_version`，迁移定义在 `app/storage/db.py` 的 `MIGRATIONS` 里）。改表结构**只能加一个新版本**，不要改已有的 SQL，否则已经升级过的数据库不会再执行。
 - 在 zsh 里用 `echo "$JSON"` 转发接口响应，会把 JSON 里的 `\n` 变成真的换行，JSON 就坏了。手动测接口用 Python（httpx）。
+- **Dify 1.17.1 的几个特殊行为**（详见 `workflows/README.md`、NOTES 15–17）：失败分支会丢掉节点原来的输出；服务停了，Dify 收到的是代理返回的 503；经过代理的 401/403 会被报成「被 SSRF 拦截」。所以 HTTP 节点都不设失败分支。
+- Dify 的 `EXPOSE_PLUGIN_DEBUGGING_PORT` 必须是纯端口号：api 容器会把它当作 `PLUGIN_REMOTE_INSTALL_PORT` 使用，写成 `127.0.0.1:5003` 会导致启动失败。要只绑定本机，就用 `docker-compose.override.yaml`，配合 `ports: !override`。
 - **chunk 的行号以前是偏的**（NOTES 12）。已在 `chunker.make_chunk` 修好，并有 `tests/test_chunker_lines.py` 覆盖。以后改切块逻辑，必须保证「按行号取出原文 == 块内容」。
 - `zh_retrieval.py` 写完报告后**进程不退出**（2026-10-05 实测：15:16 写完报告，之后一直挂着，直到手动停掉）。原因还没查，怀疑是 torch/MPS 或 chromadb 的后台线程。判断跑没跑完要看报告文件里有没有 16 个 arm，不能看进程是否退出。
 - Ragas 脚本需要模型 key，本次没跑；规格里写明 Ragas 指标在当前语料上有适配问题，检索层与生成层分开评测。
@@ -67,7 +69,8 @@
 7. **扩大评测集**：19 题每题约 5 个百分点，选不出方案。至少扩到 40 题以上，代码定位以外的题型要补，最好能拿到真实用户的问题。
 8. **多语言 rerank 单变量实验**：bge-m3 + `bge-reranker-v2-m3`（现有的 ms-marco reranker 只支持英文）。
 9. ~~M1 检索服务~~ **核心完成**。剩下的：按仓库分别检索再合并（对应 d08）；进程崩溃后残留的 `building` 记录要能清理（M4 一起做）。
-10. **M2**：~~`/api/answers`、`/api/feedback`~~ 已完成。下一步是搭 Dify Chatflow（HTTP 节点 → 生成 → 校验 → 展示）。需要用户提供：Dify 环境（已有的，或本地自托管的固定版本）和模型供应商的 key。注意：Dify 跑在容器里，容器内的 `localhost` 不是宿主机（spec §6.2）。
+10. **M2 收尾**：澄清步骤（问题没指明仓库时先问清楚）；把 Dify 里的反馈接到 `/api/feedback`；重新导入的应用填好 token 后完整跑通一次。改流程的方法：在 Dify 界面里改好，再导出覆盖 `workflows/dify-chatflow.yml`。不要手写 DSL。
+11. **Dify 环境**：在本仓库上级目录 `../dify-1.17.1/docker`（只稀疏检出了 `docker/`）。启动：先开 Docker Desktop，再在那个目录执行 `docker compose up -d`；网页地址 `http://localhost:8090`。它的 `.env` 里改了 `SECRET_KEY`、两个端口绑定、`SSRF_PROXY_ALLOW_PRIVATE_DOMAINS=host.docker.internal`；插件端口通过 `docker-compose.override.yaml` 绑定到本机（直接改变量会让 api 容器起不来，见 NOTES 和 `workflows/README.md`）。Dify 里有两个应用：「研发知识助手」（主应用）和「研发知识助手（重新导入验证）」。
 
 ## 7. 约定
 

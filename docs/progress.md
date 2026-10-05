@@ -109,6 +109,42 @@ M2：Dify 问答流程。先做 `/api/answers`（只接受本次检索返回过�
 - **和模型的判断分开存**：模型自报的 `answered` 存在 `answers` 表，用户的 `resolved` 存在 `feedback` 表（schema v3）。「模型说答了，用户说没用」正是评测要找的情况。
 - **验证**：共 53 个测试，其中 12 个针对 feedback。真实环境：本机数据库启动时升级到 v3；对之前被接受的答案，先提交「已解决」再改成「没解决、引用不对」，库里只留后一条，模型那边的状态仍然是 `answered`；对没有被接受答案的 run 提交，返回 409。
 
+### 已完成：Dify Chatflow（2026-10-05）
+
+- **环境**：本机自托管 Dify 1.17.1（docker compose，放在本仓库外）。只改了三处默认配置：`SECRET_KEY` 换成随机值；网页端口和插件调试端口只绑定 `127.0.0.1`；SSRF 白名单只放行 `host.docker.internal`。生成模型是 DeepSeek `deepseek-v4-flash`，key 由用户自己在 Dify 里填写。
+- **交付物**：`workflows/dify-chatflow.yml`，从测试过的 Dify 实例导出，不含密钥。流程、配置方法和 Dify 1.17.1 的几个特殊行为见 `workflows/README.md`。
+- **流程要点**：
+  - 请求体由代码节点用 `json.dumps` 构造；
+  - 模型只引用短编号 `C1`… ，由代码换回真实的 chunk ID；
+  - `/api/answers` 拒绝后只修正一次；
+  - 用户看到的链接全部由后端生成；
+  - 检索出错、没有证据、模型出错、引用校验失败，各自显示不同的提示。
+- **为配合真实模型输出改了后端**：
+  - `/api/answers` 的链接规则放宽为「被引用片段的规范链接，**或者在被引用片段原文里出现过的 URL**」；
+  - URL 正则只匹配合法的 URL 字符；
+  - `run_chunks` 增加 `content` 列（schema v4）。
+  - 新增 2 个测试，共 55 个。
+
+**2026-10-05 真实集成**（Dify 草稿运行 + 真实检索服务 + DeepSeek）：
+
+| 用例 | 结果 |
+| --- | --- |
+| Q1 已完成工单再 start | 结论正确（409 `INVALID_STATE_TRANSITION`，在 `_apply`/`next_status` 被拒），引用正确，第一次提交就通过 |
+| Q2 不依赖数据库的测试 | **答错了**：回答的是 mineops 的 `make test`，还引用学习手册里的问题，推断出「测试本身不依赖真实 PostgreSQL」。检索没找到 fieldops 的 `pyproject.toml`（demo20 的 d02 也一样），问题本身也没指明是哪个仓库。引用校验通过，但内容不对：这正是校验层管不到、需要回答层评测的情况 |
+| Q3 make setup 失败 | 正确，指出了写死的解释器路径，并给出绕过办法 |
+| Kafka 消费者组（资料里没有） | `insufficient_evidence`，说明了 mineops 用的是 MQTT |
+| 「怎么把服务跑起来？」（有歧义） | 只回答了 mineops，说 fieldops 的片段里没有启动命令（fieldops README 其实有，只是没被检索到）。**没有澄清步骤** |
+| 检索服务停掉 | 「连不上检索服务」 |
+| 服务在、但没有索引 | `NO_ACTIVE_INDEX` 加 request_id |
+| token 不一致 | Dify 报成「被 SSRF 拦截」，流程失败，不展示任何答案（Dify 1.17.1 的行为，NOTES 17） |
+| 模型出错（temperature 超出范围） | 「生成模型这次没有返回结果」 |
+| 导出的 DSL 作为新应用重新导入 | 没有警告，节点和连线和原来完全一致 |
+
+单次问答耗时 3–7 秒，约 4–5k token（Dify 统计）。没有核实费用。
+
 ### 未完成
 
-- Dify Chatflow（HTTP 节点 → 生成 → `/api/answers` → 分支展示），以及导出的 DSL。需要 Dify 环境和模型 key。
+- **澄清步骤**（spec §6.1 第 1 步）：问题没指明仓库、又可能涉及两个仓库时，应该先问清楚。
+- **反馈入口**：Dify 自带的点赞/点踩记在 Dify 自己的库里，没有接到 `/api/feedback`。
+- **重新导入后完整跑通一次问答**：还需要用户在新应用里填 token。
+- 检索质量：Q2 和有歧义的问题，原因都是检索不到（d02、d18），需要按仓库分别检索、改写查询。
