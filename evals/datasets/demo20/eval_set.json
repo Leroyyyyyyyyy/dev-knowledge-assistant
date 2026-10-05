@@ -1,0 +1,551 @@
+{
+ "name": "demo20",
+ "version": "v1",
+ "frozen_on": "2026-10-05",
+ "note": "Drafted by the development assistant from reading the code, approved by the author. Not from user trials. Evidence: a chunk is relevant to a span when repo and path match and their line ranges overlap. 'evidence' is a list of groups; a group is satisfied when any of its spans is hit. One group -> hit@k; several groups -> coverage@k. Empty evidence -> excluded from retrieval metrics.",
+ "repos": {
+  "fieldops": "1b5fe9c0ec5bc6df447edd673712cf75bd5447a8",
+  "mineops": "85f5da0705718b7d8e6248aa6a2bc12dd9caf09c"
+ },
+ "types": [
+  "code_location",
+  "config",
+  "howto",
+  "multi_file",
+  "issue",
+  "ambiguous",
+  "not_implemented",
+  "unanswerable"
+ ],
+ "queries": [
+  {
+   "id": "d01",
+   "type": "code_location",
+   "query": "对一张已经完成的工单再调用 start，会在哪一步被拒绝？返回什么？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/domain/work_order_status.py",
+      "start_line": 83,
+      "end_line": 97,
+      "anchor": "TRANSITIONS: dict[Command, Transition]"
+     },
+     {
+      "repo": "fieldops",
+      "path": "app/domain/work_order_status.py",
+      "start_line": 115,
+      "end_line": 118,
+      "anchor": "def next_status"
+     }
+    ],
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/api/work_orders.py",
+      "start_line": 115,
+      "end_line": 135,
+      "anchor": "INVALID_STATE_TRANSITION"
+     }
+    ]
+   ],
+   "answer": "领域模块的 TRANSITIONS 只允许从 ASSIGNED 执行 START；next_status 抛出 InvalidTransition，_apply 把它转成 409 INVALID_STATE_TRANSITION。异常发生在改 status/version 之前，不写审计事件。"
+  },
+  {
+   "id": "d02",
+   "type": "howto",
+   "query": "本机没装 Docker，只想先跑不依赖数据库的测试，命令是什么？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "pyproject.toml",
+      "start_line": 47,
+      "end_line": 49,
+      "anchor": "integration: tests that require a real PostgreSQL database"
+     }
+    ],
+    [
+     {
+      "repo": "fieldops",
+      "path": "tests/integration/test_work_orders_api.py",
+      "start_line": 11,
+      "end_line": 11,
+      "anchor": "pytestmark = pytest.mark.integration"
+     },
+     {
+      "repo": "fieldops",
+      "path": "tests/integration/test_work_order_commands.py",
+      "start_line": 20,
+      "end_line": 20,
+      "anchor": "pytestmark = pytest.mark.integration"
+     },
+     {
+      "repo": "fieldops",
+      "path": "tests/integration/test_work_order_events.py",
+      "start_line": 20,
+      "end_line": 20,
+      "anchor": "pytestmark = pytest.mark.integration"
+     },
+     {
+      "repo": "fieldops",
+      "path": "tests/integration/test_migrations.py",
+      "start_line": 7,
+      "end_line": 7,
+      "anchor": "pytestmark = pytest.mark.integration"
+     },
+     {
+      "repo": "fieldops",
+      "path": "tests/integration/test_db_connection.py",
+      "start_line": 5,
+      "end_line": 5,
+      "anchor": "pytestmark = pytest.mark.integration"
+     },
+     {
+      "repo": "fieldops",
+      "path": "tests/integration/test_assets_api.py",
+      "start_line": 11,
+      "end_line": 11,
+      "anchor": "pytestmark = pytest.mark.integration"
+     },
+     {
+      "repo": "fieldops",
+      "path": "tests/integration/test_seed.py",
+      "start_line": 22,
+      "end_line": 22,
+      "anchor": "pytestmark = pytest.mark.integration"
+     }
+    ]
+   ],
+   "answer": "uv run pytest -m \"not integration\"（2026-10-05 实测 30 passed, 63 deselected）。README 没写，依据是 pyproject 的 marker 和 tests/integration 的 pytestmark。"
+  },
+  {
+   "id": "d03",
+   "type": "issue",
+   "query": "按 README 在新机器上执行 make setup，第一步就失败，提示找不到 Python 解释器，怎么办？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "Makefile",
+      "start_line": 5,
+      "end_line": 8,
+      "anchor": "setup:"
+     }
+    ],
+    [
+     {
+      "repo": "mineops",
+      "path": "README.md",
+      "start_line": 40,
+      "end_line": 45,
+      "anchor": "make setup"
+     }
+    ]
+   ],
+   "answer": "Makefile 的 setup 用写死的本机解释器绝对路径建 venv。临时绕过：python3 -m venv .venv 后 .venv/bin/python -m pip install -e \".[dev]\"。这是仓库缺陷，应整理问题单，报错原文只能用用户提供的。"
+  },
+  {
+   "id": "d04",
+   "type": "code_location",
+   "query": "注册资产时 external_id 重复了，接口返回什么错误？在哪里处理的？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/api/assets.py",
+      "start_line": 24,
+      "end_line": 42,
+      "anchor": "DUPLICATE_EXTERNAL_ID"
+     }
+    ]
+   ],
+   "answer": "create_asset 在 flush 时捕获 IntegrityError，确认是 ix_assets_external_id 唯一索引冲突后返回 409 DUPLICATE_EXTERNAL_ID。"
+  },
+  {
+   "id": "d05",
+   "type": "code_location",
+   "query": "工单的事件历史为什么按版本号排序，而不是按创建时间？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/models/work_order_event.py",
+      "start_line": 19,
+      "end_line": 31,
+      "anchor": "Ordering by `created_at` would be wrong"
+     }
+    ]
+   ],
+   "answer": "PostgreSQL 的 now() 是事务开始时间，同一事务写的多条事件时间戳相同；work_order_version 每次变更恰好加一，能精确排序。"
+  },
+  {
+   "id": "d06",
+   "type": "code_location",
+   "query": "请求体里多传了一个接口不认识的字段，会发生什么？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/schemas/base.py",
+      "start_line": 4,
+      "end_line": 19,
+      "anchor": "extra=\"forbid\""
+     }
+    ]
+   ],
+   "answer": "RequestModel 设置 extra=\"forbid\"，未知字段直接拒绝（FastAPI 返回 422），不会静默丢弃。"
+  },
+  {
+   "id": "d07",
+   "type": "multi_file",
+   "query": "一次请求里的工单状态修改和审计事件，是怎么保证一起提交或一起回滚的？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/db/session.py",
+      "start_line": 34,
+      "end_line": 47,
+      "anchor": "one session per request"
+     }
+    ],
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/api/work_orders.py",
+      "start_line": 85,
+      "end_line": 111,
+      "anchor": "Added to the same session as the change itself"
+     }
+    ]
+   ],
+   "answer": "get_session 依赖每个请求一个 session，正常返回就 commit，异常就 rollback；_record 把审计行加进同一个 session。"
+  },
+  {
+   "id": "d08",
+   "type": "multi_file",
+   "query": "两个项目分别是怎么防止重复写入的？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/api/assets.py",
+      "start_line": 20,
+      "end_line": 42,
+      "anchor": "EXTERNAL_ID_UNIQUE_INDEX"
+     },
+     {
+      "repo": "fieldops",
+      "path": "app/db/errors.py",
+      "start_line": 8,
+      "end_line": 24,
+      "anchor": "the only race-free option"
+     }
+    ],
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/repository.py",
+      "start_line": 92,
+      "end_line": 119,
+      "anchor": "ON CONFLICT (event_id) DO NOTHING"
+     },
+     {
+      "repo": "mineops",
+      "path": "src/mineops/repository.py",
+      "start_line": 40,
+      "end_line": 45,
+      "anchor": "if event_key in self._events"
+     }
+    ]
+   ],
+   "answer": "fieldops 靠数据库唯一约束并在冲突后识别约束名（webhook 幂等尚未实现）；mineops 以 event_id 为主键，INSERT ... ON CONFLICT DO NOTHING。"
+  },
+  {
+   "id": "d09",
+   "type": "howto",
+   "query": "想在本地造一批大数据量的工单来测查询性能，怎么做？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "scripts/seed.py",
+      "start_line": 1,
+      "end_line": 10,
+      "anchor": "uv run python -m scripts.seed --yes"
+     },
+     {
+      "repo": "fieldops",
+      "path": "README.md",
+      "start_line": 42,
+      "end_line": 42,
+      "anchor": "scripts.seed --yes"
+     }
+    ]
+   ],
+   "answer": "uv run python -m scripts.seed --yes，会先清空三张表，再生成约 5 万工单、18.5 万事件，随机种子固定。"
+  },
+  {
+   "id": "d10",
+   "type": "howto",
+   "query": "CI 里依次跑了哪些检查？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": ".github/workflows/ci.yml",
+      "start_line": 27,
+      "end_line": 49,
+      "anchor": "uv run mypy app tests scripts"
+     }
+    ]
+   ],
+   "answer": "uv sync --locked → ruff check → ruff format --check → mypy app tests scripts → alembic upgrade head（迁移冒烟）→ pytest，PostgreSQL 18 作为 service。"
+  },
+  {
+   "id": "d11",
+   "type": "code_location",
+   "query": "同一条遥测事件被投递了两次，会不会重复入库？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/repository.py",
+      "start_line": 92,
+      "end_line": 119,
+      "anchor": "ON CONFLICT (event_id) DO NOTHING"
+     },
+     {
+      "repo": "mineops",
+      "path": "src/mineops/repository.py",
+      "start_line": 40,
+      "end_line": 45,
+      "anchor": "if event_key in self._events"
+     },
+     {
+      "repo": "mineops",
+      "path": "src/mineops/db/schema.sql",
+      "start_line": 1,
+      "end_line": 2,
+      "anchor": "event_id UUID PRIMARY KEY"
+     }
+    ]
+   ],
+   "answer": "不会。event_id 是主键，Postgres 实现用 ON CONFLICT DO NOTHING，save 返回 False；内存实现同样按 event_id 去重。"
+  },
+  {
+   "id": "d12",
+   "type": "code_location",
+   "query": "乱序到达的旧遥测事件会不会把设备的最新状态覆盖掉？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/repository.py",
+      "start_line": 132,
+      "end_line": 146,
+      "anchor": "WHERE (EXCLUDED.observed_at, EXCLUDED.sequence)"
+     },
+     {
+      "repo": "mineops",
+      "path": "src/mineops/repository.py",
+      "start_line": 46,
+      "end_line": 51,
+      "anchor": "(event.observed_at, event.sequence) >= ("
+     }
+    ]
+   ],
+   "answer": "不会。device_latest 的 upsert 只在 (observed_at, sequence) 不小于现有值时更新；事件本身仍写入历史。"
+  },
+  {
+   "id": "d13",
+   "type": "config",
+   "query": "发动机温度和振动分别超过多少会被判定为告警和严重？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/tools.py",
+      "start_line": 130,
+      "end_line": 152,
+      "anchor": "if device.engine_temp_c >= 115:"
+     }
+    ]
+   ],
+   "answer": "温度 ≥100°C 告警、≥115°C 严重；振动 ≥8 mm/s 告警、≥15 mm/s 严重；有故障码直接严重，油量 ≤10% 告警。"
+  },
+  {
+   "id": "d14",
+   "type": "config",
+   "query": "怎么把 copilot 从确定性模式切换成 OpenAI 模型？要配哪些环境变量？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "README.md",
+      "start_line": 65,
+      "end_line": 75,
+      "anchor": "export MINEOPS_COPILOT_PROVIDER=openai"
+     },
+     {
+      "repo": "mineops",
+      "path": ".env.example",
+      "start_line": 9,
+      "end_line": 12,
+      "anchor": "MINEOPS_COPILOT_PROVIDER=deterministic"
+     },
+     {
+      "repo": "mineops",
+      "path": "src/mineops/config.py",
+      "start_line": 23,
+      "end_line": 27,
+      "anchor": "copilot_provider: Literal[\"deterministic\", \"openai\"]"
+     },
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/service.py",
+      "start_line": 24,
+      "end_line": 36,
+      "anchor": "MINEOPS_OPENAI_API_KEY is required"
+     }
+    ]
+   ],
+   "answer": "MINEOPS_COPILOT_PROVIDER=openai，并设置 MINEOPS_OPENAI_API_KEY（缺失会报错），可选 MINEOPS_OPENAI_MODEL、MINEOPS_OPENAI_REASONING_EFFORT。"
+  },
+  {
+   "id": "d15",
+   "type": "code_location",
+   "query": "copilot 提出的处置动作在执行前要经过什么审批？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/service.py",
+      "start_line": 81,
+      "end_line": 99,
+      "anchor": "action has already been reviewed"
+     },
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/models.py",
+      "start_line": 51,
+      "end_line": 56,
+      "anchor": "requires_approval: bool = True"
+     },
+     {
+      "repo": "mineops",
+      "path": "README.md",
+      "start_line": 77,
+      "end_line": 80,
+      "anchor": "separate human"
+     }
+    ]
+   ],
+   "answer": "模型只能提出动作，状态为 proposed、requires_approval=True；需要人通过独立的决策接口 approve/reject，每个动作只能审一次。"
+  },
+  {
+   "id": "d16",
+   "type": "code_location",
+   "query": "如果 copilot 在结论里引用了一个不存在的证据 ID，会怎样？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/service.py",
+      "start_line": 101,
+      "end_line": 117,
+      "anchor": "copilot referenced unknown evidence IDs"
+     }
+    ]
+   ],
+   "answer": "_validate_evidence_references 发现未知 ID 就抛 RuntimeError，报告不会生成；没有证据的动作、缺设备历史证据的隔离动作同样被拒绝。"
+  },
+  {
+   "id": "d17",
+   "type": "howto",
+   "query": "用 docker compose 启动完整环境，会起哪些服务？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "README.md",
+      "start_line": 124,
+      "end_line": 139,
+      "anchor": "This starts:"
+     },
+     {
+      "repo": "mineops",
+      "path": "docker-compose.yml",
+      "start_line": 1,
+      "end_line": 65,
+      "anchor": "simulator:"
+     }
+    ]
+   ],
+   "answer": "simulator、mqtt（Mosquitto）、ingest、postgres、api 五个服务；本地 Mosquitto 不鉴权，不能暴露到公网。"
+  },
+  {
+   "id": "d18",
+   "type": "ambiguous",
+   "query": "怎么把服务跑起来？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "README.md",
+      "start_line": 31,
+      "end_line": 36,
+      "anchor": "uv run uvicorn app.main:app --reload"
+     },
+     {
+      "repo": "mineops",
+      "path": "README.md",
+      "start_line": 42,
+      "end_line": 45,
+      "anchor": "make demo"
+     },
+     {
+      "repo": "mineops",
+      "path": "Makefile",
+      "start_line": 10,
+      "end_line": 11,
+      "anchor": "demo:"
+     }
+    ]
+   ],
+   "answer": "有两个仓库，应先澄清问的是哪一个；也可以两个都给出：fieldops 是 uv sync → 起 db → alembic upgrade → uvicorn，mineops 是 make setup / make demo。"
+  },
+  {
+   "id": "d19",
+   "type": "not_implemented",
+   "query": "fieldops 的 webhook 签名校验是在哪里实现的？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "README.md",
+      "start_line": 105,
+      "end_line": 105,
+      "anchor": "Still to come: webhook signature verification"
+     },
+     {
+      "repo": "fieldops",
+      "path": "PROJECT.md",
+      "start_line": 60,
+      "end_line": 60,
+      "anchor": "Idempotency"
+     }
+    ]
+   ],
+   "answer": "还没实现。README 写明 webhook 签名校验与幂等属于后续计划；不能编造实现位置。"
+  },
+  {
+   "id": "d20",
+   "type": "unanswerable",
+   "query": "mineops 的 Kafka 消费者组 ID 在哪里配置？",
+   "evidence": [],
+   "answer": "资料中没有 Kafka；mineops 的事件通道是 MQTT。应说明找不到依据，不能编造配置项。检索层不计分。"
+  }
+ ]
+}

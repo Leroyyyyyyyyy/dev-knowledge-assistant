@@ -1,0 +1,26 @@
+{
+ "note": "zh -> en machine translation of the Chinese runs only; ASCII runs copied verbatim. Generated, not hand-edited.",
+ "model": "Helsinki-NLP/opus-mt-zh-en",
+ "queries": {
+  "d01": "Call for one of the completed worksheets. start， Which step is it going to be rejected? ？ Back to what? ？",
+  "d02": "It's not loaded. Docker， I just want to run without relying on a database test. ， What's the order? ？",
+  "d03": "Press README Do it on the new machine. make setup， The first step is a failure. ， Can not get folder: %s: %s Python Interpreter ， What do we do? ？",
+  "d04": "When registering assets external_id I repeat. ， Interface returns what error ？ Where'd it go? ？",
+  "d05": "Why is the history of events in the worksheet sorted by version number? ， Not by the time of creation. ？",
+  "d06": "There's an extra field in the request that doesn't know the interface. ， What's going to happen? ？",
+  "d07": "Change of work order status and audit event in one request ， How do you promise to file it together or roll it back together? ？",
+  "d08": "How do the two projects prevent duplication? ？",
+  "d09": "I want to build a large collection of data locally to measure the performance of the query. ， How? ？",
+  "d10": "CI Which checks did Lee run? ？",
+  "d11": "The same telemetry event was delivered twice. ， Will it be repeated in the library? ？",
+  "d12": "Do old telemetry events randomly arrive to overwrite the latest state of the device? ？",
+  "d13": "The temperature of the engine and the vibrations are determined to be both warning and severe. ？",
+  "d14": "How? copilot Switch from deterministic mode to OpenAI Model ？ What are the environmental variables to match? ？",
+  "d15": "copilot What's the clearance before the proposed disposal action is carried out? ？",
+  "d16": "If... copilot In the conclusion, one of the non-existent evidences was cited. ID， What's going to happen? ？",
+  "d17": "Use it. docker compose Activate complete environment. ， Which services will come up? ？",
+  "d18": "How do you run the service? ？",
+  "d19": "fieldops It's... it's... it's... webhook Where did the signature check come from? ？",
+  "d20": "mineops It's... it's... it's... Kafka Consumer group ID Where to configure it? ？"
+ }
+}

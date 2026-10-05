@@ -1,0 +1,21 @@
+[project]
+name = "dev-knowledge-assistant"
+version = "0.1.0"
+description = "Codebase RAG with FastAPI, Dify, commit-pinned citations and confirmed GitHub issue drafts"
+requires-python = "==3.13.*"
+dependencies = [
+    # Pinned to the versions the M0 baseline ran on, so a copied module can be checked against it.
+    "chromadb==1.4.1",
+    "sentence-transformers==5.2.2",
+    "transformers==5.0.0",
+    "torch==2.10.0",
+    "numpy==1.26.4",
+]
+
+[dependency-groups]
+experiments = [
+    "sentencepiece>=0.2.0",  # tokenizer for the opus-mt translation model
+]
+
+[tool.uv]
+package = false

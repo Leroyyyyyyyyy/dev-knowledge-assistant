@@ -1,0 +1,18 @@
+{
+  "note": "Repositories the assistant may index. Each is read from the pinned commit, never from a working tree. 'checkout' is a local clone, relative to this repository's root.",
+  "repos": {
+    "fieldops": {
+      "remote": "https://github.com/Leroyyyyyyyyy/fieldops-workorder-bridge",
+      "checkout": "../fieldops-workorder-bridge",
+      "commit": "1b5fe9c0ec5bc6df447edd673712cf75bd5447a8",
+      "exclude": ["docs/interview-notes.md"],
+      "exclude_reason": "Deleted by the pending license PR. Drop this entry and move 'commit' once that PR is merged."
+    },
+    "mineops": {
+      "remote": "https://github.com/Leroyyyyyyyyy/mineops",
+      "checkout": "../mineops",
+      "commit": "85f5da0705718b7d8e6248aa6a2bc12dd9caf09c",
+      "exclude": []
+    }
+  }
+}
