@@ -2,7 +2,8 @@
 Validate and record a generated answer against the retrieval run it came from.
 
 What this proves: every cited chunk exists and was returned by *this* run, and
-every link in the text is the backend's own link for a cited chunk. What it
+every link in the text can be traced to a cited chunk: either the backend's own
+link for it, or a URL that appears verbatim in its text. What it
 does not prove: that the cited chunks support what the answer says. That is
 checked by evaluation (spec §3.1, §8.2), not here.
 
@@ -17,10 +18,12 @@ import sqlite3
 import uuid
 from datetime import UTC, datetime, timedelta
 
-# Anything that looks like a link. Trailing punctuation (ASCII and full-width)
-# is trimmed so "见 https://...#L3-L9。" still matches the canonical link.
-URL_PATTERN = re.compile(r"https?://[^\s<>\"'`\[\]()（）【】]+")
-TRAILING_PUNCTUATION = ".,;:!?。，；：！？、」』"
+# A link is a run of characters that may legally appear in a URL (RFC 3986),
+# so it stops at Chinese text and full-width punctuation: an earlier pattern
+# read "http://127.0.0.1:8000/docs，以及…" as one link. Trailing ASCII
+# punctuation is trimmed so "见 https://...#L3-L9." still matches.
+URL_PATTERN = re.compile(r"https?://[A-Za-z0-9\-._~:/?#@!$&*+,;=%]+")
+TRAILING_PUNCTUATION = ".,;:!?"
 
 
 class RunNotFound(Exception):
@@ -81,6 +84,7 @@ def check_citations(status: str, answer_text: str, cited_chunk_ids: list[str], r
 
     citations = []
     allowed_links = set()
+    cited_texts = []
     for chunk_id in cited_chunk_ids:
         row = run_chunks[chunk_id]
         citations.append(
@@ -96,15 +100,23 @@ def check_citations(status: str, answer_text: str, cited_chunk_ids: list[str], r
             }
         )
         allowed_links.add(row["url"])
+        cited_texts.append(row["content"] or "")
 
+    # A link passes if the backend issued it for a cited chunk, or if the answer
+    # quotes it from a cited chunk's own text (a docs URL in a README, say).
+    quoted_source = "\n".join(cited_texts)
     fabricated = []
     for link in links_in(answer_text):
-        if link not in allowed_links:
-            fabricated.append(link)
+        if link in allowed_links:
+            continue
+        if link in quoted_source:
+            continue
+        fabricated.append(link)
     if fabricated:
         raise AnswerRejected(
             "FABRICATED_LINK",
-            f"links in the answer must be the canonical links of cited chunks; not allowed: {fabricated}",
+            "links must be the canonical link of a cited chunk or appear in a cited chunk's text; "
+            f"not allowed: {fabricated}",
         )
     return citations
 

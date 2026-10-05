@@ -189,3 +189,28 @@ def test_schema_v1_database_is_migrated(tmp_path):
     connection.close()
     assert version == SCHEMA_VERSION
     assert "url" in columns and "answers" in tables
+
+
+def test_links_stop_at_chinese_text_and_punctuation():
+    from app.answers import links_in
+
+    text = "文档在 http://127.0.0.1:8000/docs，以及造数命令；见 https://github.com/o/r/blob/abc/a.py#L1-L2。"
+    assert links_in(text) == ["http://127.0.0.1:8000/docs", "https://github.com/o/r/blob/abc/a.py#L1-L2"]
+
+
+def test_accepts_a_url_quoted_from_a_cited_chunk(client, workspace, encoder):
+    """Found with real DeepSeek output: quoting a docs URL from a README is not a fabricated link."""
+    build_index_version(workspace["settings"], encoder)
+    run = client.post(
+        "/api/retrieve", json={"query": "API docs served", "repo_id": "alpha", "top_k": 3}, headers=AUTH
+    ).json()
+    docs_chunk = [chunk for chunk in run["chunks"] if chunk["path"] == "docs/api.md"][0]
+    other_chunk = [chunk for chunk in run["chunks"] if chunk["path"] != "docs/api.md"][0]
+    text = "启动后，交互式文档在 http://127.0.0.1:8000/docs，以及可选的造数命令。"
+
+    rejected = answer(client, run["run_id"], answer_text=text, cited_chunk_ids=[other_chunk["chunk_id"]])
+    assert rejected.status_code == 422
+    assert rejected.json()["code"] == "FABRICATED_LINK"  # the URL is in a chunk that was not cited
+
+    accepted = answer(client, run["run_id"], answer_text=text, cited_chunk_ids=[docs_chunk["chunk_id"]])
+    assert accepted.status_code == 200

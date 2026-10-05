@@ -127,8 +127,8 @@ def retrieve(
             connection.execute(
                 """
                 INSERT INTO run_chunks (run_id, rank, chunk_id, distance, repo_id, commit_sha,
-                                        path, start_line, end_line, url)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                        path, start_line, end_line, url, content)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     run_id,
@@ -141,6 +141,7 @@ def retrieve(
                     chunk["start_line"],
                     chunk["end_line"],
                     chunk["url"],
+                    chunk["content"],
                 ),
             )
 

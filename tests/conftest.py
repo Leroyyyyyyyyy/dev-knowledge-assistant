@@ -83,6 +83,7 @@ def workspace(tmp_path: Path) -> dict:
             "service/orders.py": "def cancel_order(order):\n    raise ZebraTransitionError('cannot cancel')\n",
             "docs/使用 说明.md": "# Setup\n\nRun the quokka installer before anything else.\n",
             "notes/private.md": "personal notes that must never be indexed\n",
+            "docs/api.md": "Interactive API docs are served at http://127.0.0.1:8000/docs once it runs.\n",
         },
     )
     # Uncommitted change: must not reach the index, which reads the commit only.
