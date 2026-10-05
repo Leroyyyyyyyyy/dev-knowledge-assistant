@@ -4,7 +4,7 @@
 
 ## 1. 当前状态
 
-- **M0 完成，M1 核心完成，M2 进行中**（2026-10-05），详情见 `docs/progress.md`。M2 已完成 `/api/answers`、`/api/feedback`，以及 Dify Chatflow（`workflows/dify-chatflow.yml`，真实环境测过 10 个用例，见 `docs/progress.md`）。共 55 个测试。M2 剩下：澄清步骤、把反馈接进 Dify、重新导入后完整跑一次。
+- **M0 完成，M1 核心完成，M2 进行中**（2026-10-05），详情见 `docs/progress.md`。M2 已完成 `/api/answers`、`/api/feedback`，以及 Dify Chatflow（`workflows/dify-chatflow.yml`，真实环境测过 10 个用例，见 `docs/progress.md`）。共 55 个测试。M2 剩下：澄清步骤、把反馈接进 Dify。
 - 检索服务能跑起来：`python -m app.indexing.build` 从固定 commit 构建版本化索引；`uvicorn app.main:app` 提供 `/health`、`/ready`、`/api/retrieve`。25 个自动测试通过，真实 bge-m3 + 两个仓库的端到端已验证（引用链接打开后，行号对应的内容和返回的块逐字一致）。
 - 代码结构：`app/indexing/`（快照、构建）、`app/retrieval/`（chunker、encoder、检索服务）、`app/storage/db.py`（SQLite schema）、`app/api/schemas.py`、`app/main.py`、`app/citations.py`；`config/repos.json`；`evals/`；`tests/`。
 - 本地运行需要 `.env` 里的 `DKA_SERVICE_TOKEN`（`.env` 已 gitignore，模板见 `.env.example`）。`.claude/launch.json` 里有一个名为 `api` 的启动配置，端口 8077。
@@ -69,8 +69,8 @@
 7. **扩大评测集**：19 题每题约 5 个百分点，选不出方案。至少扩到 40 题以上，代码定位以外的题型要补，最好能拿到真实用户的问题。
 8. **多语言 rerank 单变量实验**：bge-m3 + `bge-reranker-v2-m3`（现有的 ms-marco reranker 只支持英文）。
 9. ~~M1 检索服务~~ **核心完成**。剩下的：按仓库分别检索再合并（对应 d08）；进程崩溃后残留的 `building` 记录要能清理（M4 一起做）。
-10. **M2 收尾**：澄清步骤（问题没指明仓库时先问清楚）；把 Dify 里的反馈接到 `/api/feedback`；重新导入的应用填好 token 后完整跑通一次。改流程的方法：在 Dify 界面里改好，再导出覆盖 `workflows/dify-chatflow.yml`。不要手写 DSL。
-11. **Dify 环境**：在本仓库上级目录 `../dify-1.17.1/docker`（只稀疏检出了 `docker/`）。启动：先开 Docker Desktop，再在那个目录执行 `docker compose up -d`；网页地址 `http://localhost:8090`。它的 `.env` 里改了 `SECRET_KEY`、两个端口绑定、`SSRF_PROXY_ALLOW_PRIVATE_DOMAINS=host.docker.internal`；插件端口通过 `docker-compose.override.yaml` 绑定到本机（直接改变量会让 api 容器起不来，见 NOTES 和 `workflows/README.md`）。Dify 里有两个应用：「研发知识助手」（主应用）和「研发知识助手（重新导入验证）」。
+10. **M2 收尾**：澄清步骤（问题没指明仓库时先问清楚）；把 Dify 里的反馈接到 `/api/feedback`。改流程的方法：在 Dify 界面里改好，再导出覆盖 `workflows/dify-chatflow.yml`。不要手写 DSL。
+11. **Dify 环境**：在本仓库上级目录 `../dify-1.17.1/docker`（只稀疏检出了 `docker/`）。启动：先开 Docker Desktop，再在那个目录执行 `docker compose up -d`；网页地址 `http://localhost:8090`。它的 `.env` 里改了 `SECRET_KEY`、两个端口绑定、`SSRF_PROXY_ALLOW_PRIVATE_DOMAINS=host.docker.internal`、`APP_WEB_URL` 和 `SERVICE_API_URL`（都设为 `http://localhost:8090`，否则 Dify 显示的链接会少端口）；插件端口通过 `docker-compose.override.yaml` 绑定到本机（直接改变量会让 api 容器起不来，见 NOTES 和 `workflows/README.md`）。Dify 里有两个应用：「研发知识助手」（主应用，已发布，Web 入口是 `http://localhost:8090/chat/<code>`）和「研发知识助手（重新导入验证）」（只用来验证，可以删掉）。Web 应用和 API 只跑**已发布**的版本，改完草稿要记得发布。Dify 的登录会话默认 60 分钟过期，刷新页面就会自动续上。
 
 ## 7. 约定
 
