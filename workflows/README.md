@@ -26,6 +26,8 @@ Request bodies are built with `json.dumps` in code nodes, never by pasting the q
 
 ## Set up
 
+The web app and service API serve the **published** version only. After importing or editing, publish the app. Dify's displayed URLs omit the port unless `APP_WEB_URL` and `SERVICE_API_URL` are set in its `.env` (here `http://localhost:8090`).
+
 1. Start the retrieval service (see the repository README / `docs/progress.md`) and build an index.
 2. In Dify, import `dify-chatflow.yml` (Studio → Import DSL).
 3. Install the DeepSeek plugin and add your own API key under Settings → Model Provider.
@@ -56,4 +58,5 @@ Draft runs against the real service, index and model (`docs/progress.md` has the
 | Service up without an index | `NO_ACTIVE_INDEX` with request_id |
 | Wrong token | Dify reports an SSRF block (see above); nothing is shown as an answer |
 | Model error (out-of-range temperature) | "model returned no result" message |
-| Exported DSL re-imported as a new app | Imported without warnings; nodes and edges identical |
+| Exported DSL re-imported as a new app | Imported without warnings; nodes and edges identical; with the token set, it answered Q1 and passed validation on the first submission |
+| Published web app (`/chat/<code>`) | Answers; in one run the first submission listed no citations and the fix attempt recovered it |
