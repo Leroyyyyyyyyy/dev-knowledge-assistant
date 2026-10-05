@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     top_k_default: int = Field(default=8, ge=1)
     top_k_max: int = Field(default=20, ge=1)
 
+    # An answer must be submitted within this many minutes of its retrieval run.
+    answer_window_minutes: int = Field(default=60, ge=1)
+
     @property
     def db_path(self) -> Path:
         return self.data_dir / "app.sqlite3"

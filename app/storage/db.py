@@ -55,6 +55,45 @@ CREATE TABLE IF NOT EXISTS run_chunks (
 """
 
 
+# Each migration moves the schema from version N-1 to N. SCHEMA above is version 1.
+# PRAGMA user_version records where a database is; a migration and its version
+# bump commit together, so a crash cannot leave a half-applied step marked done.
+MIGRATIONS = {
+    2: """
+    -- Citation metadata copied at retrieval time, so /api/answers can build
+    -- canonical links from the run alone, even after that index is deleted.
+    ALTER TABLE run_chunks ADD COLUMN repo_id TEXT;
+    ALTER TABLE run_chunks ADD COLUMN commit_sha TEXT;
+    ALTER TABLE run_chunks ADD COLUMN path TEXT;
+    ALTER TABLE run_chunks ADD COLUMN start_line INTEGER;
+    ALTER TABLE run_chunks ADD COLUMN end_line INTEGER;
+    ALTER TABLE run_chunks ADD COLUMN url TEXT;
+
+    CREATE TABLE answers (
+        answer_id        TEXT PRIMARY KEY,
+        run_id           TEXT NOT NULL REFERENCES runs (run_id),
+        request_id       TEXT NOT NULL,
+        created_at       TEXT NOT NULL,
+        status           TEXT NOT NULL CHECK (status IN ('answered', 'insufficient_evidence')),
+        answer_text      TEXT NOT NULL,
+        cited_chunk_ids  TEXT NOT NULL,      -- JSON list, in the order the answer cites them
+        model            TEXT NOT NULL,
+        prompt_version   TEXT NOT NULL,
+        content_hash     TEXT NOT NULL,      -- identifies a resubmission of the same answer
+        validation       TEXT NOT NULL CHECK (validation IN ('accepted', 'rejected')),
+        rejection_code   TEXT,
+        rejection_detail TEXT
+    );
+
+    -- Rejected attempts are kept for evaluation; only one answer per run is accepted.
+    CREATE UNIQUE INDEX one_accepted_answer_per_run
+        ON answers (run_id) WHERE validation = 'accepted';
+    """,
+}
+
+SCHEMA_VERSION = max(MIGRATIONS)
+
+
 def connect(db_path: Path) -> sqlite3.Connection:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(db_path, timeout=10)
@@ -67,6 +106,15 @@ def init_db(db_path: Path) -> None:
     connection = connect(db_path)
     try:
         connection.executescript(SCHEMA)
+        current = connection.execute("PRAGMA user_version").fetchone()[0]
+        if current == 0:
+            current = 1  # SCHEMA just created or already present: that is version 1
+        for version in sorted(MIGRATIONS):
+            if version <= current:
+                continue
+            connection.executescript(f"BEGIN; {MIGRATIONS[version]} PRAGMA user_version = {version}; COMMIT;")
+            current = version
+        connection.execute(f"PRAGMA user_version = {current}")
         connection.commit()
     finally:
         connection.close()

@@ -19,7 +19,8 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.api.schemas import ErrorResponse, RetrieveRequest, RetrieveResponse
+from app.answers import AnswerConflict, AnswerRejected, RunExpired, RunNotFound, submit_answer
+from app.api.schemas import AnswerRequest, AnswerResponse, ErrorResponse, RetrieveRequest, RetrieveResponse
 from app.indexing.build import collection_name
 from app.retrieval.encoder import Encoder
 from app.retrieval.service import EncoderMismatch, NoActiveIndex, UnknownRepo, retrieve
@@ -172,6 +173,50 @@ def create_app(
         except Exception as exc:
             logger.exception("retrieval failed request_id=%s", request.state.request_id)
             raise ApiError(503, "RETRIEVAL_UNAVAILABLE", "retrieval is temporarily unavailable") from exc
+
+    @app.post(
+        "/api/answers",
+        response_model=AnswerResponse,
+        dependencies=[Depends(require_service_token)],
+        responses={
+            401: {"model": ErrorResponse},
+            404: {"model": ErrorResponse},
+            409: {"model": ErrorResponse},
+            410: {"model": ErrorResponse},
+            422: {"model": ErrorResponse},
+        },
+    )
+    def answers_endpoint(
+        body: AnswerRequest,
+        request: Request,
+        connection: sqlite3.Connection = Depends(get_db),
+    ) -> dict:
+        """
+        Validate a generated answer against its retrieval run, then record it.
+
+        A rejected answer (unknown citation, fabricated link, ...) is a 422 that
+        Dify must route to an error branch, never shown as a normal answer.
+        """
+        try:
+            return submit_answer(
+                connection,
+                run_id=body.run_id,
+                status=body.status,
+                answer_text=body.answer_text,
+                cited_chunk_ids=body.cited_chunk_ids,
+                model=body.model,
+                prompt_version=body.prompt_version,
+                request_id=request.state.request_id,
+                window_minutes=settings.answer_window_minutes,
+            )
+        except RunNotFound as exc:
+            raise ApiError(404, "RUN_NOT_FOUND", str(exc)) from exc
+        except RunExpired as exc:
+            raise ApiError(410, "RUN_EXPIRED", str(exc)) from exc
+        except AnswerRejected as exc:
+            raise ApiError(422, exc.code, exc.message) from exc
+        except AnswerConflict as exc:
+            raise ApiError(409, "ANSWER_ALREADY_ACCEPTED", str(exc)) from exc
 
     return app
 

@@ -58,3 +58,35 @@ class ErrorResponse(BaseModel):
     code: str
     message: str
     request_id: str
+
+
+class AnswerRequest(RequestModel):
+    run_id: str = Field(pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+    status: Literal["answered", "insufficient_evidence"]
+    answer_text: str = Field(min_length=1, max_length=20000)
+    cited_chunk_ids: list[str] = Field(default_factory=list, max_length=20)
+    # Which generator produced this answer (spec §5: record model and prompt version).
+    model: str = Field(min_length=1, max_length=200)
+    prompt_version: str = Field(min_length=1, max_length=64)
+
+
+class Citation(BaseModel):
+    chunk_id: str
+    rank: int
+    repo_id: str
+    commit_sha: str
+    path: str
+    start_line: int
+    end_line: int
+    url: str
+
+
+class AnswerResponse(BaseModel):
+    answer_id: str
+    run_id: str
+    status: Literal["answered", "insufficient_evidence"]
+    answer_text: str
+    citations: list[Citation]
+    index_version: str
+    model: str
+    prompt_version: str

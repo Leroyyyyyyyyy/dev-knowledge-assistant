@@ -4,7 +4,7 @@
 
 ## 1. 当前状态
 
-- **M0 完成，M1 核心完成**（2026-10-05），详情见 `docs/progress.md`。
+- **M0 完成，M1 核心完成，M2 进行中**（2026-10-05），详情见 `docs/progress.md`。M2 已完成 `POST /api/answers`（引用校验 + 保存，41 个测试），还差 `/api/feedback` 和 Dify。
 - 检索服务能跑起来：`python -m app.indexing.build` 从固定 commit 构建版本化索引；`uvicorn app.main:app` 提供 `/health`、`/ready`、`/api/retrieve`。25 个自动测试通过，真实 bge-m3 + 两个仓库的端到端已验证（引用链接打开后，行号对应的内容和返回的块逐字一致）。
 - 代码结构：`app/indexing/`（快照、构建）、`app/retrieval/`（chunker、encoder、检索服务）、`app/storage/db.py`（SQLite schema）、`app/api/schemas.py`、`app/main.py`、`app/citations.py`；`config/repos.json`；`evals/`；`tests/`。
 - 本地运行需要 `.env` 里的 `DKA_SERVICE_TOKEN`（`.env` 已 gitignore，模板见 `.env.example`）。`.claude/launch.json` 里有一个名为 `api` 的启动配置，端口 8077。
@@ -36,6 +36,8 @@
 - **整句机器翻译会改写代码标识符**（`chunk_python` → `cunk_python`）。现在已不走翻译路线；如果以后要对查询做改写，必须保留 ASCII 片段。
 - 后台跑实验时 stdout 被重定向到文件会整块缓冲，进度看不到。要加 `PYTHONUNBUFFERED=1`；加 `TQDM_DISABLE=1` 可以关掉模型加载时的进度条刷屏。
 - bge-m3 在 MPS 上不能用大批次编码长块：一批会补齐到最长块的长度，显存吃紧后进程直接卡死（NOTES 11）。demo20 已用 `BATCH_SIZE_OVERRIDES` 改成每批 1 块；`demo20_retrieval.py` 写完报告后用 `os._exit(0)` 退出。
+- SQLite schema 有版本号（`PRAGMA user_version`，迁移定义在 `app/storage/db.py` 的 `MIGRATIONS` 里）。改表结构**只能加一个新版本**，不要改已有的 SQL，否则已经升级过的数据库不会再执行。
+- 在 zsh 里用 `echo "$JSON"` 转发接口响应，会把 JSON 里的 `\n` 变成真的换行，JSON 就坏了。手动测接口用 Python（httpx）。
 - **chunk 的行号以前是偏的**（NOTES 12）。已在 `chunker.make_chunk` 修好，并有 `tests/test_chunker_lines.py` 覆盖。以后改切块逻辑，必须保证「按行号取出原文 == 块内容」。
 - `zh_retrieval.py` 写完报告后**进程不退出**（2026-10-05 实测：15:16 写完报告，之后一直挂着，直到手动停掉）。原因还没查，怀疑是 torch/MPS 或 chromadb 的后台线程。判断跑没跑完要看报告文件里有没有 16 个 arm，不能看进程是否退出。
 - Ragas 脚本需要模型 key，本次没跑；规格里写明 Ragas 指标在当前语料上有适配问题，检索层与生成层分开评测。
@@ -65,7 +67,7 @@
 7. **扩大评测集**：19 题每题约 5 个百分点，选不出方案。至少扩到 40 题以上，代码定位以外的题型要补，最好能拿到真实用户的问题。
 8. **多语言 rerank 单变量实验**：bge-m3 + `bge-reranker-v2-m3`（现有的 ms-marco reranker 只支持英文）。
 9. ~~M1 检索服务~~ **核心完成**。剩下的：按仓库分别检索再合并（对应 d08）；进程崩溃后残留的 `building` 记录要能清理（M4 一起做）。
-10. **M2**：先做 `POST /api/answers`（从 `run_chunks` 解析引用，只接受本次检索返回过的 chunk ID）和 `POST /api/feedback`，再搭 Dify Chatflow（HTTP 节点 → 生成 → 校验 → 展示）。需要用户提供：Dify 环境（已有的，或本地自托管的固定版本）和模型供应商的 key。注意：Dify 跑在容器里，容器内的 `localhost` 不是宿主机（spec §6.2）。
+10. **M2**：~~`POST /api/answers`~~ 已完成。下一步是 `POST /api/feedback`，然后搭 Dify Chatflow（HTTP 节点 → 生成 → 校验 → 展示）。需要用户提供：Dify 环境（已有的，或本地自托管的固定版本）和模型供应商的 key。注意：Dify 跑在容器里，容器内的 `localhost` 不是宿主机（spec §6.2）。
 
 ## 7. 约定
 

@@ -81,3 +81,27 @@ curl -s -X POST localhost:8077/api/retrieve -H "Authorization: Bearer $DKA_SERVI
 ### 下一步
 
 M2：Dify 问答流程。先做 `/api/answers`（只接受本次检索返回过的 chunk ID），再搭 Dify Chatflow 并导出 DSL。
+
+## M2 Dify 问答
+
+### 已完成：`POST /api/answers`（2026-10-05）
+
+- **作用**：拿生成的答案，对照它所属的那次检索做校验，再保存。只能证明「引用真实存在，而且属于本次检索；正文里的链接都是后端签发的」，**不能证明答案的内容被引用支持**。后者由回答层评测检查。
+- **输入**：`run_id`、`status`（`answered` / `insufficient_evidence`）、`answer_text`、`cited_chunk_ids`（最多 20 个）、`model`、`prompt_version`。
+- **拒绝规则**（拒绝时返回 422，同时记为 `rejected` 保存，供评测用）：
+  - `UNKNOWN_CITATION`：引用了不属于本次检索的 chunk，包括其他检索返回的真实 chunk。
+  - `CITATION_REQUIRED`：`answered` 却没有任何引用。
+  - `FABRICATED_LINK`：正文里的链接不是被引用 chunk 的规范链接，比如指向分支、指向未引用的 chunk、指向外站。
+  - `DUPLICATE_CITATION`。
+- **其他错误**：run 不存在 404；超过 60 分钟（`DKA_ANSWER_WINDOW_MINUTES`）410；同一个 run 已经接受了不同的答案 409。
+- **重试**：内容完全相同的重复提交返回原来那条答案，不算冲突。拒绝之后可以再交一次修正版（对应 spec「最多一次格式修复」，次数由 Dify 控制）。数据库用部分唯一索引保证每个 run 只有一个被接受的答案。
+- **数据库**：引入 `PRAGMA user_version` 迁移，v2 给 `run_chunks` 加上引用元数据，并新建 `answers` 表。M1 的旧数据库启动时会自动升级。
+
+**验证**：`uv run pytest`，共 41 个测试，其中 16 个针对 answers：每条拒绝规则、别的检索返回的真实 chunk、过期、重试幂等、冲突、拒绝后再修正、鉴权、v1 → v2 迁移。
+
+**2026-10-05 真实环境**：本机 v1 数据库启动时升级到 v2，原有的 4 条运行记录保留。真实检索之后：指向 main 分支的链接 → 422 `FABRICATED_LINK`；编造的 chunk ID → 422 `UNKNOWN_CITATION`；合规答案 → 200；同一答案重试 → 200，`answer_id` 相同。三次提交都写进了 `answers` 表。**这里的答案是手写的，还没有接真实的生成模型。**
+
+### 未完成
+
+- `POST /api/feedback`。
+- Dify Chatflow（HTTP 节点 → 生成 → `/api/answers` → 分支展示），以及导出的 DSL。需要 Dify 环境和模型 key。
