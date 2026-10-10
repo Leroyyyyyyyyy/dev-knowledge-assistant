@@ -230,3 +230,24 @@ def test_source_url_rules():
         source_url("https://github.com/o/r", "abc123", "x.py", 1, 2)
     with pytest.raises(ValueError):
         source_url("https://gitlab.com/o/r", sha, "x.py", 1, 2)
+
+
+# --- concurrency ----------------------------------------------------------
+
+
+def test_concurrent_requests_do_not_share_connections_across_threads(client, workspace, encoder):
+    # FastAPI opens the per-request connection (a sync dependency) on one
+    # worker thread and runs the sync endpoint on another. Under concurrent
+    # load those differ, and sqlite3's default same-thread check fails the
+    # request with a 503. Found by running 20 Dify questions at once.
+    from concurrent.futures import ThreadPoolExecutor
+
+    build(workspace, encoder)
+
+    def ask(number):
+        return client.post("/api/retrieve", json={"query": "cancel order %d" % number}, headers=AUTH).status_code
+
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        statuses = list(pool.map(ask, range(64)))
+
+    assert statuses == [200] * 64

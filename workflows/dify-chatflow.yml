@@ -15,7 +15,16 @@ dependencies:
 kind: app
 version: 0.7.0
 workflow:
-  conversation_variables: []
+  conversation_variables:
+  - description: The question waiting for the user to say which repository it is about.
+      Empty when nothing is pending.
+    id: 6b0f3c1e-4d2a-4f8e-9a51-2c7d8e9f0a13
+    name: pending_question
+    selector:
+    - conversation
+    - pending_question
+    value: ''
+    value_type: string
   environment_variables:
   - description: 检索服务地址（固定配置，不来自用户输入）
     id: 66e537ba-22d4-46ec-8266-9b5f8b807c5d
@@ -37,7 +46,7 @@ workflow:
     file_upload:
       enabled: false
     opening_statement: 问 fieldops-workorder-bridge 或 mineops 的代码和文档。回答只依据检索到的片段，并附上指向固定
-      commit 的来源。
+      commit 的来源。问题没说是哪个仓库、两个又都可能涉及时，会先问一句。回答下面的按钮用来反馈有没有解决问题。
     retriever_resource:
       enabled: false
     sensitive_word_avoidance:
@@ -56,14 +65,6 @@ workflow:
       voice: ''
   graph:
     edges:
-    - data: {}
-      id: start-source-build_retrieve-target
-      source: start
-      sourceHandle: source
-      target: build_retrieve
-      targetHandle: target
-      type: custom
-      zIndex: 0
     - data: {}
       id: build_retrieve-source-retrieve-target
       source: build_retrieve
@@ -248,6 +249,102 @@ workflow:
       targetHandle: target
       type: custom
       zIndex: 0
+    - data: {}
+      id: start-source-route_input-target
+      source: start
+      sourceHandle: source
+      target: route_input
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: route_input-source-if_feedback-target
+      source: route_input
+      sourceHandle: source
+      target: if_feedback
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: if_feedback-true-submit_feedback-target
+      source: if_feedback
+      sourceHandle: 'true'
+      target: submit_feedback
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: submit_feedback-source-check_feedback-target
+      source: submit_feedback
+      sourceHandle: source
+      target: check_feedback
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: check_feedback-source-ans_feedback-target
+      source: check_feedback
+      sourceHandle: source
+      target: ans_feedback
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: if_feedback-false-route_repo-target
+      source: if_feedback
+      sourceHandle: 'false'
+      target: route_repo
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: route_repo-source-decide_scope-target
+      source: route_repo
+      sourceHandle: source
+      target: decide_scope
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: decide_scope-source-if_ask-target
+      source: decide_scope
+      sourceHandle: source
+      target: if_ask
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: if_ask-true-set_pending-target
+      source: if_ask
+      sourceHandle: 'true'
+      target: set_pending
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: set_pending-source-ans_clarify-target
+      source: set_pending
+      sourceHandle: source
+      target: ans_clarify
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: if_ask-false-clear_pending-target
+      source: if_ask
+      sourceHandle: 'false'
+      target: clear_pending
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: clear_pending-source-build_retrieve-target
+      source: clear_pending
+      sourceHandle: source
+      target: build_retrieve
+      targetHandle: target
+      type: custom
+      zIndex: 0
     nodes:
     - data:
         desc: ''
@@ -267,9 +364,10 @@ workflow:
       type: custom
       width: 244
     - data:
-        code: "\ndef main(query: str) -> dict:\n    import json\n    payload = {\"\
-          query\": query.strip()[:1000], \"top_k\": 8}\n    return {\"payload\": json.dumps(payload,\
-          \ ensure_ascii=False)}\n"
+        code: "\ndef main(question: str, repo_id: str) -> dict:\n    import json\n\
+          \    payload = {\"query\": question.strip()[:1000], \"top_k\": 8}\n    if\
+          \ repo_id:\n        payload[\"repo_id\"] = repo_id\n    return {\"payload\"\
+          : json.dumps(payload, ensure_ascii=False)}\n"
         code_language: python3
         desc: ''
         outputs:
@@ -280,16 +378,20 @@ workflow:
         type: code
         variables:
         - value_selector:
-          - sys
-          - query
-          variable: query
+          - decide_scope
+          - question
+          variable: question
+        - value_selector:
+          - decide_scope
+          - repo_id
+          variable: repo_id
       height: 90
       id: build_retrieve
       position:
-        x: 300
+        x: 2100
         y: 300
       positionAbsolute:
-        x: 300
+        x: 2100
         y: 300
       sourcePosition: right
       targetPosition: left
@@ -327,10 +429,10 @@ workflow:
       height: 90
       id: retrieve
       position:
-        x: 600
+        x: 2400
         y: 300
       positionAbsolute:
-        x: 600
+        x: 2400
         y: 300
       sourcePosition: right
       targetPosition: left
@@ -396,10 +498,10 @@ workflow:
       height: 90
       id: parse_retrieve
       position:
-        x: 900
+        x: 2700
         y: 300
       positionAbsolute:
-        x: 900
+        x: 2700
         y: 300
       sourcePosition: right
       targetPosition: left
@@ -424,10 +526,10 @@ workflow:
       height: 90
       id: if_retrieved
       position:
-        x: 1200
+        x: 3000
         y: 300
       positionAbsolute:
-        x: 1200
+        x: 3000
         y: 300
       sourcePosition: right
       targetPosition: left
@@ -452,10 +554,10 @@ workflow:
       height: 90
       id: if_no_evidence
       position:
-        x: 1500
+        x: 3300
         y: 600
       positionAbsolute:
-        x: 1500
+        x: 3300
         y: 600
       sourcePosition: right
       targetPosition: left
@@ -470,10 +572,10 @@ workflow:
       height: 90
       id: ans_no_evidence
       position:
-        x: 1800
+        x: 3600
         y: 500
       positionAbsolute:
-        x: 1800
+        x: 3600
         y: 500
       sourcePosition: right
       targetPosition: left
@@ -488,10 +590,10 @@ workflow:
       height: 90
       id: ans_retrieve_error
       position:
-        x: 1800
+        x: 3600
         y: 700
       positionAbsolute:
-        x: 1800
+        x: 3600
         y: 700
       sourcePosition: right
       targetPosition: left
@@ -534,7 +636,7 @@ workflow:
             "cited_chunk_ids": ["C1", "C2"]}'
         - id: generate-user
           role: user
-          text: '问题：{{#sys.query#}}
+          text: '问题：{{#decide_scope.question#}}
 
 
             片段：
@@ -549,10 +651,10 @@ workflow:
       height: 90
       id: generate
       position:
-        x: 1500
+        x: 3300
         y: 300
       positionAbsolute:
-        x: 1500
+        x: 3300
         y: 300
       sourcePosition: right
       targetPosition: left
@@ -567,10 +669,10 @@ workflow:
       height: 90
       id: ans_model_down
       position:
-        x: 1800
+        x: 3600
         y: 0
       positionAbsolute:
-        x: 1800
+        x: 3600
         y: 0
       sourcePosition: right
       targetPosition: left
@@ -629,10 +731,10 @@ workflow:
       height: 90
       id: build_answer
       position:
-        x: 1800
+        x: 3600
         y: 300
       positionAbsolute:
-        x: 1800
+        x: 3600
         y: 300
       sourcePosition: right
       targetPosition: left
@@ -670,38 +772,46 @@ workflow:
       height: 90
       id: submit
       position:
-        x: 2100
+        x: 3900
         y: 300
       positionAbsolute:
-        x: 2100
+        x: 3900
         y: 300
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 244
     - data:
-        code: "\ndef main(parse_error: str, status_code: int, body: str) -> dict:\n\
-          \    import json\n    result = {\"route\": \"error\", \"final_text\": \"\
-          \", \"error_text\": \"\"}\n    if parse_error:\n        result[\"route\"\
-          ] = \"fix\"\n        result[\"error_text\"] = parse_error\n        return\
-          \ result\n    try:\n        data = json.loads(body)\n    except Exception:\n\
-          \        result[\"error_text\"] = \"答案服务返回了无法解析的内容（HTTP %s）\" % status_code\n\
-          \        return result\n\n    if status_code == 422:\n        result[\"\
-          route\"] = \"fix\"\n        result[\"error_text\"] = \"%s：%s\" % (data.get(\"\
-          code\", \"?\"), data.get(\"message\", \"\"))\n        return result\n  \
-          \  if status_code != 200:\n        result[\"error_text\"] = \"答案服务返回错误 %s：%s（request_id\
-          \ %s）\" % (\n            status_code, data.get(\"code\", \"?\"), data.get(\"\
-          request_id\", \"?\"))\n        return result\n\n    lines = []\n    if data[\"\
-          status\"] == \"insufficient_evidence\":\n        lines.append(\"**证据不足**，以下只是资料中能确定的部分。\"\
-          )\n        lines.append(\"\")\n    lines.append(data[\"answer_text\"])\n\
-          \    if data[\"citations\"]:\n        lines.append(\"\")\n        lines.append(\"\
-          **引用**\")\n        for number, citation in enumerate(data[\"citations\"\
-          ], start=1):\n            label = \"%s:%s#L%s-L%s\" % (\n              \
-          \  citation[\"repo_id\"], citation[\"path\"], citation[\"start_line\"],\
-          \ citation[\"end_line\"])\n            lines.append(\"%s. [%s](%s)\" % (number,\
-          \ label, citation[\"url\"]))\n    lines.append(\"\")\n    lines.append(\"\
-          `run_id: %s`\" % data[\"run_id\"])\n    result[\"route\"] = \"ok\"\n   \
-          \ result[\"final_text\"] = \"\\n\".join(lines)\n    return result\n"
+        code: "\ndef main(scope_note: str, parse_error: str, status_code: int, body:\
+          \ str) -> dict:\n    import json\n    result = {\"route\": \"error\", \"\
+          final_text\": \"\", \"error_text\": \"\"}\n    if parse_error:\n       \
+          \ result[\"route\"] = \"fix\"\n        result[\"error_text\"] = parse_error\n\
+          \        return result\n    try:\n        data = json.loads(body)\n    except\
+          \ Exception:\n        result[\"error_text\"] = \"答案服务返回了无法解析的内容（HTTP %s）\"\
+          \ % status_code\n        return result\n\n    if status_code == 422:\n \
+          \       result[\"route\"] = \"fix\"\n        result[\"error_text\"] = \"\
+          %s：%s\" % (data.get(\"code\", \"?\"), data.get(\"message\", \"\"))\n   \
+          \     return result\n    if status_code != 200:\n        result[\"error_text\"\
+          ] = \"答案服务返回错误 %s：%s（request_id %s）\" % (\n            status_code, data.get(\"\
+          code\", \"?\"), data.get(\"request_id\", \"?\"))\n        return result\n\
+          \n    lines = []\n    if data[\"status\"] == \"insufficient_evidence\":\n\
+          \        lines.append(\"**证据不足**，以下只是资料中能确定的部分。\")\n        lines.append(\"\
+          \")\n    lines.append(data[\"answer_text\"])\n    if data[\"citations\"\
+          ]:\n        lines.append(\"\")\n        lines.append(\"**引用**\")\n     \
+          \   for number, citation in enumerate(data[\"citations\"], start=1):\n \
+          \           label = \"%s:%s#L%s-L%s\" % (\n                citation[\"repo_id\"\
+          ], citation[\"path\"], citation[\"start_line\"], citation[\"end_line\"])\n\
+          \            lines.append(\"%s. [%s](%s)\" % (number, label, citation[\"\
+          url\"]))\n    lines.append(\"\")\n    lines.append(scope_note)\n    lines.append(\"\
+          `run_id: %s`\" % data[\"run_id\"])\n\n    lines.append(\"\")\n    lines.append(\"\
+          这个回答解决你的问题了吗？\")\n    lines.append(\"\")\n    feedback = [(\"解决了\", \"primary\"\
+          ), (\"答案不对\", \"\"), (\"不完整\", \"\"), (\"引用不对\", \"\"), (\"不相关\", \"\")]\n\
+          \    for label, variant in feedback:\n        message = \"反馈：%s run=%s\"\
+          \ % (label, data[\"run_id\"])\n        if variant:\n            lines.append('<button\
+          \ data-message=\"%s\" data-variant=\"%s\">%s</button>' % (message, variant,\
+          \ label))\n        else:\n            lines.append('<button data-message=\"\
+          %s\">%s</button>' % (message, label))\n    result[\"route\"] = \"ok\"\n\
+          \    result[\"final_text\"] = \"\\n\".join(lines)\n    return result\n"
         code_language: python3
         desc: ''
         outputs:
@@ -718,6 +828,10 @@ workflow:
         type: code
         variables:
         - value_selector:
+          - decide_scope
+          - scope_note
+          variable: scope_note
+        - value_selector:
           - build_answer
           - parse_error
           variable: parse_error
@@ -732,10 +846,10 @@ workflow:
       height: 90
       id: check_submit
       position:
-        x: 2400
+        x: 4200
         y: 300
       positionAbsolute:
-        x: 2400
+        x: 4200
         y: 300
       sourcePosition: right
       targetPosition: left
@@ -760,10 +874,10 @@ workflow:
       height: 90
       id: if_accepted
       position:
-        x: 2700
+        x: 4500
         y: 300
       positionAbsolute:
-        x: 2700
+        x: 4500
         y: 300
       sourcePosition: right
       targetPosition: left
@@ -778,10 +892,10 @@ workflow:
       height: 90
       id: ans_final
       position:
-        x: 3000
+        x: 4800
         y: 200
       positionAbsolute:
-        x: 3000
+        x: 4800
         y: 200
       sourcePosition: right
       targetPosition: left
@@ -806,10 +920,10 @@ workflow:
       height: 90
       id: if_fixable
       position:
-        x: 3000
+        x: 4800
         y: 500
       positionAbsolute:
-        x: 3000
+        x: 4800
         y: 500
       sourcePosition: right
       targetPosition: left
@@ -824,10 +938,10 @@ workflow:
       height: 90
       id: ans_submit_error
       position:
-        x: 3300
+        x: 5100
         y: 800
       positionAbsolute:
-        x: 3300
+        x: 5100
         y: 800
       sourcePosition: right
       targetPosition: left
@@ -870,7 +984,7 @@ workflow:
             "cited_chunk_ids": ["C1", "C2"]}'
         - id: fix-user
           role: user
-          text: '问题：{{#sys.query#}}
+          text: '问题：{{#decide_scope.question#}}
 
 
             片段：
@@ -898,10 +1012,10 @@ workflow:
       height: 90
       id: fix
       position:
-        x: 3300
+        x: 5100
         y: 500
       positionAbsolute:
-        x: 3300
+        x: 5100
         y: 500
       sourcePosition: right
       targetPosition: left
@@ -960,10 +1074,10 @@ workflow:
       height: 90
       id: build_answer_fix
       position:
-        x: 3600
+        x: 5400
         y: 500
       positionAbsolute:
-        x: 3600
+        x: 5400
         y: 500
       sourcePosition: right
       targetPosition: left
@@ -1001,38 +1115,46 @@ workflow:
       height: 90
       id: submit_fix
       position:
-        x: 3900
+        x: 5700
         y: 500
       positionAbsolute:
-        x: 3900
+        x: 5700
         y: 500
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 244
     - data:
-        code: "\ndef main(parse_error: str, status_code: int, body: str) -> dict:\n\
-          \    import json\n    result = {\"route\": \"error\", \"final_text\": \"\
-          \", \"error_text\": \"\"}\n    if parse_error:\n        result[\"route\"\
-          ] = \"fix\"\n        result[\"error_text\"] = parse_error\n        return\
-          \ result\n    try:\n        data = json.loads(body)\n    except Exception:\n\
-          \        result[\"error_text\"] = \"答案服务返回了无法解析的内容（HTTP %s）\" % status_code\n\
-          \        return result\n\n    if status_code == 422:\n        result[\"\
-          route\"] = \"fix\"\n        result[\"error_text\"] = \"%s：%s\" % (data.get(\"\
-          code\", \"?\"), data.get(\"message\", \"\"))\n        return result\n  \
-          \  if status_code != 200:\n        result[\"error_text\"] = \"答案服务返回错误 %s：%s（request_id\
-          \ %s）\" % (\n            status_code, data.get(\"code\", \"?\"), data.get(\"\
-          request_id\", \"?\"))\n        return result\n\n    lines = []\n    if data[\"\
-          status\"] == \"insufficient_evidence\":\n        lines.append(\"**证据不足**，以下只是资料中能确定的部分。\"\
-          )\n        lines.append(\"\")\n    lines.append(data[\"answer_text\"])\n\
-          \    if data[\"citations\"]:\n        lines.append(\"\")\n        lines.append(\"\
-          **引用**\")\n        for number, citation in enumerate(data[\"citations\"\
-          ], start=1):\n            label = \"%s:%s#L%s-L%s\" % (\n              \
-          \  citation[\"repo_id\"], citation[\"path\"], citation[\"start_line\"],\
-          \ citation[\"end_line\"])\n            lines.append(\"%s. [%s](%s)\" % (number,\
-          \ label, citation[\"url\"]))\n    lines.append(\"\")\n    lines.append(\"\
-          `run_id: %s`\" % data[\"run_id\"])\n    result[\"route\"] = \"ok\"\n   \
-          \ result[\"final_text\"] = \"\\n\".join(lines)\n    return result\n"
+        code: "\ndef main(scope_note: str, parse_error: str, status_code: int, body:\
+          \ str) -> dict:\n    import json\n    result = {\"route\": \"error\", \"\
+          final_text\": \"\", \"error_text\": \"\"}\n    if parse_error:\n       \
+          \ result[\"route\"] = \"fix\"\n        result[\"error_text\"] = parse_error\n\
+          \        return result\n    try:\n        data = json.loads(body)\n    except\
+          \ Exception:\n        result[\"error_text\"] = \"答案服务返回了无法解析的内容（HTTP %s）\"\
+          \ % status_code\n        return result\n\n    if status_code == 422:\n \
+          \       result[\"route\"] = \"fix\"\n        result[\"error_text\"] = \"\
+          %s：%s\" % (data.get(\"code\", \"?\"), data.get(\"message\", \"\"))\n   \
+          \     return result\n    if status_code != 200:\n        result[\"error_text\"\
+          ] = \"答案服务返回错误 %s：%s（request_id %s）\" % (\n            status_code, data.get(\"\
+          code\", \"?\"), data.get(\"request_id\", \"?\"))\n        return result\n\
+          \n    lines = []\n    if data[\"status\"] == \"insufficient_evidence\":\n\
+          \        lines.append(\"**证据不足**，以下只是资料中能确定的部分。\")\n        lines.append(\"\
+          \")\n    lines.append(data[\"answer_text\"])\n    if data[\"citations\"\
+          ]:\n        lines.append(\"\")\n        lines.append(\"**引用**\")\n     \
+          \   for number, citation in enumerate(data[\"citations\"], start=1):\n \
+          \           label = \"%s:%s#L%s-L%s\" % (\n                citation[\"repo_id\"\
+          ], citation[\"path\"], citation[\"start_line\"], citation[\"end_line\"])\n\
+          \            lines.append(\"%s. [%s](%s)\" % (number, label, citation[\"\
+          url\"]))\n    lines.append(\"\")\n    lines.append(scope_note)\n    lines.append(\"\
+          `run_id: %s`\" % data[\"run_id\"])\n\n    lines.append(\"\")\n    lines.append(\"\
+          这个回答解决你的问题了吗？\")\n    lines.append(\"\")\n    feedback = [(\"解决了\", \"primary\"\
+          ), (\"答案不对\", \"\"), (\"不完整\", \"\"), (\"引用不对\", \"\"), (\"不相关\", \"\")]\n\
+          \    for label, variant in feedback:\n        message = \"反馈：%s run=%s\"\
+          \ % (label, data[\"run_id\"])\n        if variant:\n            lines.append('<button\
+          \ data-message=\"%s\" data-variant=\"%s\">%s</button>' % (message, variant,\
+          \ label))\n        else:\n            lines.append('<button data-message=\"\
+          %s\">%s</button>' % (message, label))\n    result[\"route\"] = \"ok\"\n\
+          \    result[\"final_text\"] = \"\\n\".join(lines)\n    return result\n"
         code_language: python3
         desc: ''
         outputs:
@@ -1049,6 +1171,10 @@ workflow:
         type: code
         variables:
         - value_selector:
+          - decide_scope
+          - scope_note
+          variable: scope_note
+        - value_selector:
           - build_answer_fix
           - parse_error
           variable: parse_error
@@ -1063,10 +1189,10 @@ workflow:
       height: 90
       id: check_fix
       position:
-        x: 4200
+        x: 6000
         y: 500
       positionAbsolute:
-        x: 4200
+        x: 6000
         y: 500
       sourcePosition: right
       targetPosition: left
@@ -1091,10 +1217,10 @@ workflow:
       height: 90
       id: if_fix_accepted
       position:
-        x: 4500
+        x: 6300
         y: 500
       positionAbsolute:
-        x: 4500
+        x: 6300
         y: 500
       sourcePosition: right
       targetPosition: left
@@ -1109,10 +1235,10 @@ workflow:
       height: 90
       id: ans_final_fix
       position:
-        x: 4800
+        x: 6600
         y: 400
       positionAbsolute:
-        x: 4800
+        x: 6600
         y: 400
       sourcePosition: right
       targetPosition: left
@@ -1127,11 +1253,455 @@ workflow:
       height: 90
       id: ans_rejected
       position:
-        x: 4800
+        x: 6600
         y: 700
       positionAbsolute:
-        x: 4800
+        x: 6600
         y: 700
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "\ndef main(query: str) -> dict:\n    import json\n    import re\n\n\
+          \    # Feedback buttons under each answer send \"反馈：<label> run=<run_id>\"\
+          .\n    # The run id travels in the message itself, so a click on an older\n\
+          \    # answer's button records feedback for that answer, not the latest\
+          \ one.\n    labels = {\n        \"解决了\": (True, None),\n        \"答案不对\"\
+          : (False, \"wrong_answer\"),\n        \"不完整\": (False, \"incomplete\"),\n\
+          \        \"引用不对\": (False, \"wrong_citation\"),\n        \"不相关\": (False,\
+          \ \"not_relevant\"),\n    }\n    result = {\"kind\": \"question\", \"payload\"\
+          : \"\", \"label\": \"\"}\n    match = re.fullmatch(r\"反馈：(\\S+)\\s+run=([0-9a-f-]{36})\"\
+          , query.strip())\n    if match is None or match.group(1) not in labels:\n\
+          \        return result\n\n    label = match.group(1)\n    resolved, reason\
+          \ = labels[label]\n    body = {\"run_id\": match.group(2), \"resolved\"\
+          : resolved}\n    if reason is not None:\n        body[\"reason\"] = reason\n\
+          \    result[\"kind\"] = \"feedback\"\n    result[\"payload\"] = json.dumps(body)\n\
+          \    result[\"label\"] = label\n    return result\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          kind:
+            children: null
+            type: string
+          label:
+            children: null
+            type: string
+          payload:
+            children: null
+            type: string
+        selected: false
+        title: 识别反馈消息
+        type: code
+        variables:
+        - value_selector:
+          - sys
+          - query
+          variable: query
+      height: 90
+      id: route_input
+      position:
+        x: 300
+        y: 300
+      positionAbsolute:
+        x: 300
+        y: 300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: true-cond
+            value: feedback
+            varType: string
+            variable_selector:
+            - route_input
+            - kind
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 是反馈？
+        type: if-else
+      height: 90
+      id: if_feedback
+      position:
+        x: 600
+        y: 300
+      positionAbsolute:
+        x: 600
+        y: 300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config:
+            api_key: '{{#env.DKA_SERVICE_TOKEN#}}'
+            type: bearer
+          type: api-key
+        body:
+          data:
+          - id: feedback-body
+            key: ''
+            type: text
+            value: '{{#route_input.payload#}}'
+          type: json
+        desc: ''
+        headers: Content-Type:application/json
+        method: post
+        params: ''
+        retry_config:
+          enabled: false
+          max_retries: 1
+          retry_interval: 1000
+        selected: false
+        timeout:
+          connect: 5
+          read: 10
+          write: 10
+        title: 记录反馈 /api/feedback
+        type: http-request
+        url: '{{#env.DKA_BASE_URL#}}/api/feedback'
+        variables: []
+      height: 90
+      id: submit_feedback
+      position:
+        x: 900
+        y: 0
+      positionAbsolute:
+        x: 900
+        y: 0
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "\ndef main(status_code: int, body: str, label: str) -> dict:\n    import\
+          \ json\n    try:\n        data = json.loads(body)\n    except Exception:\n\
+          \        if \"ERR_CONNECT_FAIL\" in body or \"ERR_READ_TIMEOUT\" in body:\n\
+          \            return {\"text\": \"连不上检索服务，这次反馈没有记录。\"}\n        return {\"\
+          text\": \"反馈接口返回了无法解析的内容（HTTP %s），这次反馈没有记录。\" % status_code}\n\n    if status_code\
+          \ == 200:\n        if data[\"resolved\"]:\n            return {\"text\"\
+          : \"已记录：解决了。\"}\n        return {\"text\": \"已记录：没解决（%s）。可以换个说法再问，或者指明文件、函数名。\"\
+          \ % label}\n    if status_code == 404:\n        return {\"text\": \"找不到这次回答对应的记录（request_id\
+          \ %s），反馈没有记录。\" % data.get(\"request_id\", \"?\")}\n    if status_code ==\
+          \ 409:\n        return {\"text\": \"这次提问没有通过校验的回答，没有可反馈的内容。\"}\n    return\
+          \ {\"text\": \"反馈接口返回错误 %s：%s（request_id %s）。\" % (\n        status_code,\
+          \ data.get(\"code\", \"?\"), data.get(\"request_id\", \"?\"))}\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          text:
+            children: null
+            type: string
+        selected: false
+        title: 检查反馈结果
+        type: code
+        variables:
+        - value_selector:
+          - submit_feedback
+          - status_code
+          variable: status_code
+        - value_selector:
+          - submit_feedback
+          - body
+          variable: body
+        - value_selector:
+          - route_input
+          - label
+          variable: label
+      height: 90
+      id: check_feedback
+      position:
+        x: 1200
+        y: 0
+      positionAbsolute:
+        x: 1200
+        y: 0
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#check_feedback.text#}}'
+        desc: ''
+        selected: false
+        title: 反馈结果
+        type: answer
+        variables: []
+      height: 90
+      id: ans_feedback
+      position:
+        x: 1500
+        y: 0
+      positionAbsolute:
+        x: 1500
+        y: 0
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        default_value:
+        - key: text
+          type: string
+          value: ''
+        desc: ''
+        error_strategy: default-value
+        model:
+          completion_params:
+            max_tokens: 1024
+            temperature: 0
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: route-system
+          role: system
+          text: '判断用户的问题针对哪个代码仓库。只有两个仓库：
+
+
+            - fieldops：fieldops-workorder-bridge，矿山维修承包商的工单 API。工单状态机（NEW → ASSIGNED
+            → IN_PROGRESS → COMPLETED，可取消，不能重开）、命名命令而不是通用 PATCH、每次变更在同一事务里写审计事件、资产、FastAPI、SQLAlchemy、PostgreSQL、Alembic
+            迁移。
+
+            - mineops：采矿运维平台。车队模拟器、MQTT、遥测事件接入（event_id 幂等、乱序事件）、设备最新状态、Operations
+            Copilot（只读工具、结构化结论、需要审批的处置动作）、FastAPI、PostgreSQL、Makefile。
+
+
+            输出规则：
+
+            - 问题里的概念只属于一个仓库 → 输出那个仓库。
+
+            - 问题明确要求比较两个仓库，或者问两个仓库共同的东西 → both。
+
+            - 问题是两个仓库都可能有、但答案会不同的通用事情（怎么运行、怎么测试、怎么部署、依赖、配置、数据库迁移、项目结构等），又没有说是哪个仓库
+            → unclear。
+
+            - 如果给了「上一轮待澄清的问题」，本轮输入通常是用户对「哪个仓库」的回复，只根据这条回复判断，看不出仓库就输出 unclear；如果本轮输入明显是一个新问题，就按新问题判断。
+
+
+            只输出一个 JSON 对象，不要输出其他文字：{"repo": "fieldops" 或 "mineops" 或 "both" 或 "unclear"}'
+        - id: route-user
+          role: user
+          text: '上一轮待澄清的问题（为空表示没有）：{{#conversation.pending_question#}}
+
+
+            本轮输入：{{#sys.query#}}'
+        reasoning_format: separated
+        selected: false
+        title: 判断仓库
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: route_repo
+      position:
+        x: 900
+        y: 300
+      positionAbsolute:
+        x: 900
+        y: 300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "\ndef main(query: str, pending_question: str, router_text: str) ->\
+          \ dict:\n    import json\n\n    descriptions = {\n        \"fieldops\":\
+          \ \"工单 API：工单状态机、审计事件、PostgreSQL\",\n        \"mineops\": \"采矿运维平台：遥测接入、MQTT、Operations\
+          \ Copilot\",\n    }\n\n    def named_repos(text):\n        lowered = text.lower()\n\
+          \        found = []\n        for repo_id in descriptions:\n            if\
+          \ repo_id in lowered:\n                found.append(repo_id)\n        return\
+          \ found\n\n    # The router is a reasoning model: drop anything up to </think>,\
+          \ then read\n    # the first JSON object. An unreadable answer counts as\
+          \ \"no decision\".\n    label = \"\"\n    text = router_text.split(\"</think>\"\
+          )[-1]\n    start, end = text.find(\"{\"), text.rfind(\"}\")\n    if start\
+          \ != -1 and end > start:\n        try:\n            label = json.loads(text[start:end\
+          \ + 1]).get(\"repo\", \"\")\n        except Exception:\n            label\
+          \ = \"\"\n\n    result = {\"action\": \"retrieve\", \"question\": query.strip(),\
+          \ \"repo_id\": \"\",\n              \"scope_note\": \"\", \"clarify_text\"\
+          : \"\"}\n\n    named = named_repos(query)\n    says_both = \"都\" in query\
+          \ or \"两个\" in query\n    # A long reply that names no repository is a new\
+          \ question, not an answer\n    # to \"which repository?\"; the pending one\
+          \ is dropped.\n    answering = pending_question and (named or says_both\
+          \ or len(query.strip()) <= 15)\n\n    if answering:\n        # Search with\
+          \ the original question. Ask only once: if the reply\n        # still does\
+          \ not settle it, search both and say so.\n        result[\"question\"] =\
+          \ pending_question\n        if len(named) == 1:\n            result[\"repo_id\"\
+          ] = named[0]\n        elif len(named) == 2 or says_both:\n            result[\"\
+          repo_id\"] = \"\"\n        elif label in descriptions:\n            result[\"\
+          repo_id\"] = label\n        else:\n            result[\"scope_note\"] =\
+          \ \"没能从回复里确定是哪个仓库，两个仓库都查了。\"\n    else:\n        if len(named) == 1:\n \
+          \           result[\"repo_id\"] = named[0]\n        elif len(named) == 2\
+          \ or label == \"both\":\n            result[\"repo_id\"] = \"\"\n      \
+          \  elif label in descriptions:\n            result[\"repo_id\"] = label\n\
+          \        elif label == \"unclear\":\n            lines = [\"这个问题两个仓库可能都涉及，你问的是哪一个？\"\
+          , \"\"]\n            for repo_id, description in descriptions.items():\n\
+          \                lines.append(\"- **%s**：%s\" % (repo_id, description))\n\
+          \            lines.append(\"\")\n            lines.append('<button data-message=\"\
+          fieldops\" data-variant=\"primary\">fieldops</button>')\n            lines.append('<button\
+          \ data-message=\"mineops\" data-variant=\"primary\">mineops</button>')\n\
+          \            lines.append('<button data-message=\"两个都查\">两个都查</button>')\n\
+          \            result[\"action\"] = \"ask\"\n            result[\"clarify_text\"\
+          ] = \"\\n\".join(lines)\n            return result\n        else:\n    \
+          \        result[\"scope_note\"] = \"仓库判断这一步没有返回结果，两个仓库都查了。\"\n\n    if result[\"\
+          repo_id\"]:\n        scope = \"检索范围：\" + result[\"repo_id\"]\n    else:\n\
+          \        scope = \"检索范围：fieldops、mineops\"\n    if result[\"scope_note\"\
+          ]:\n        scope = scope + \"（\" + result[\"scope_note\"] + \"）\"\n   \
+          \ result[\"scope_note\"] = scope\n    return result\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          action:
+            children: null
+            type: string
+          clarify_text:
+            children: null
+            type: string
+          question:
+            children: null
+            type: string
+          repo_id:
+            children: null
+            type: string
+          scope_note:
+            children: null
+            type: string
+        selected: false
+        title: 决定检索范围
+        type: code
+        variables:
+        - value_selector:
+          - sys
+          - query
+          variable: query
+        - value_selector:
+          - conversation
+          - pending_question
+          variable: pending_question
+        - value_selector:
+          - route_repo
+          - text
+          variable: router_text
+      height: 90
+      id: decide_scope
+      position:
+        x: 1200
+        y: 300
+      positionAbsolute:
+        x: 1200
+        y: 300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: true-cond
+            value: ask
+            varType: string
+            variable_selector:
+            - decide_scope
+            - action
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 需要澄清？
+        type: if-else
+      height: 90
+      id: if_ask
+      position:
+        x: 1500
+        y: 300
+      positionAbsolute:
+        x: 1500
+        y: 300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - decide_scope
+          - question
+          variable_selector:
+          - conversation
+          - pending_question
+        selected: false
+        title: 记下待澄清的问题
+        type: assigner
+        version: '2'
+      height: 90
+      id: set_pending
+      position:
+        x: 1800
+        y: 100
+      positionAbsolute:
+        x: 1800
+        y: 100
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#decide_scope.clarify_text#}}'
+        desc: ''
+        selected: false
+        title: 请用户指明仓库
+        type: answer
+        variables: []
+      height: 90
+      id: ans_clarify
+      position:
+        x: 2100
+        y: 100
+      positionAbsolute:
+        x: 2100
+        y: 100
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: clear
+          value: null
+          variable_selector:
+          - conversation
+          - pending_question
+        selected: false
+        title: 清空待澄清的问题
+        type: assigner
+        version: '2'
+      height: 90
+      id: clear_pending
+      position:
+        x: 1800
+        y: 300
+      positionAbsolute:
+        x: 1800
+        y: 300
       sourcePosition: right
       targetPosition: left
       type: custom

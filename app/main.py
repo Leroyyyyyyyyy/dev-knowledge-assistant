@@ -101,7 +101,10 @@ def create_app(
         return error_response(request, 422, "INVALID_REQUEST", "; ".join(problems))
 
     def get_db():
-        connection = connect(settings.db_path)
+        # FastAPI may open this connection on one worker thread and run the
+        # endpoint on another. One request uses it at a time, never two
+        # threads at once, so sqlite3's same-thread check can be turned off.
+        connection = connect(settings.db_path, check_same_thread=False)
         try:
             yield connection
         finally:
