@@ -1,0 +1,2041 @@
+{
+  "date": "2026-10-11",
+  "index_version": "v20261005083840019845",
+  "embed_model": "BAAI/bge-m3",
+  "dataset_version": "v1",
+  "translations": "queries_en_deepseek.json",
+  "fusion": {
+    "depth": 20,
+    "rrf_k": 60
+  },
+  "arms": {
+    "zh": {
+      "mean": {
+        "1": 0.21052631578947367,
+        "3": 0.4473684210526316,
+        "5": 0.47368421052631576,
+        "10": 0.6842105263157895
+      },
+      "queries": [
+        {
+          "id": "d01",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "对一张已经完成的工单再调用 start，会在哪一步被拒绝？返回什么？",
+          "group_ranks": [
+            10,
+            8
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/unit/test_work_order_transitions.py#L75-L79",
+          "top1_distance": 0.3694109320640564
+        },
+        {
+          "id": "d02",
+          "type": "howto",
+          "metric": "coverage",
+          "query": "本机没装 Docker，只想先跑不依赖数据库的测试，命令是什么？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L1-L10",
+          "top1_distance": 0.3894045352935791
+        },
+        {
+          "id": "d03",
+          "type": "issue",
+          "metric": "coverage",
+          "query": "按 README 在新机器上执行 make setup，第一步就失败，提示找不到 Python 解释器，怎么办？",
+          "group_ranks": [
+            4,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.5,
+            "10": 0.5
+          },
+          "top1": "mineops:Dockerfile#L1-L13",
+          "top1_distance": 0.40639281272888184
+        },
+        {
+          "id": "d04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "注册资产时 external_id 重复了，接口返回什么错误？在哪里处理的？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/api/assets.py#L21-L63",
+          "top1_distance": 0.3610503077507019
+        },
+        {
+          "id": "d05",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单的事件历史为什么按版本号排序，而不是按创建时间？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/models/work_order_event.py#L19-L72",
+          "top1_distance": 0.3546186685562134
+        },
+        {
+          "id": "d06",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "请求体里多传了一个接口不认识的字段，会发生什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/base.py#L4-L19",
+          "top1_distance": 0.4215776324272156
+        },
+        {
+          "id": "d07",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "一次请求里的工单状态修改和审计事件，是怎么保证一起提交或一起回滚的？",
+          "group_ranks": [
+            null,
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 0.5
+          },
+          "top1": "fieldops:app/api/work_orders.py#L115-L217",
+          "top1_distance": 0.3300175070762634
+        },
+        {
+          "id": "d08",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "两个项目分别是怎么防止重复写入的？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L241-L290",
+          "top1_distance": 0.4329153895378113
+        },
+        {
+          "id": "d09",
+          "type": "howto",
+          "metric": "hit",
+          "query": "想在本地造一批大数据量的工单来测查询性能，怎么做？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L81-L129",
+          "top1_distance": 0.39035797119140625
+        },
+        {
+          "id": "d10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "CI 里依次跑了哪些检查？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.github/workflows/ci.yml#L1-L22",
+          "top1_distance": 0.44200587272644043
+        },
+        {
+          "id": "d11",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "同一条遥测事件被投递了两次，会不会重复入库？",
+          "group_ranks": [
+            8
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3565515875816345
+        },
+        {
+          "id": "d12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "乱序到达的旧遥测事件会不会把设备的最新状态覆盖掉？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3848215341567993
+        },
+        {
+          "id": "d13",
+          "type": "config",
+          "metric": "hit",
+          "query": "发动机温度和振动分别超过多少会被判定为告警和严重？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/tools.py#L14-L22",
+          "top1_distance": 0.4084591865539551
+        },
+        {
+          "id": "d14",
+          "type": "config",
+          "metric": "hit",
+          "query": "怎么把 copilot 从确定性模式切换成 OpenAI 模型？要配哪些环境变量？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/config.py#L8-L30",
+          "top1_distance": 0.34033799171447754
+        },
+        {
+          "id": "d15",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 提出的处置动作在执行前要经过什么审批？",
+          "group_ranks": [
+            6
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.4118238687515259
+        },
+        {
+          "id": "d16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "如果 copilot 在结论里引用了一个不存在的证据 ID，会怎样？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/__init__.py#L1-L1",
+          "top1_distance": 0.3727128505706787
+        },
+        {
+          "id": "d17",
+          "type": "howto",
+          "metric": "hit",
+          "query": "用 docker compose 启动完整环境，会起哪些服务？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
+          "top1_distance": 0.35441166162490845
+        },
+        {
+          "id": "d18",
+          "type": "ambiguous",
+          "metric": "hit",
+          "query": "怎么把服务跑起来？",
+          "group_ranks": [
+            10
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:README.md#L42-L90",
+          "top1_distance": 0.4199710488319397
+        },
+        {
+          "id": "d19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的 webhook 签名校验是在哪里实现的？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.44580572843551636
+        }
+      ]
+    },
+    "en": {
+      "mean": {
+        "1": 0.21052631578947367,
+        "3": 0.47368421052631576,
+        "5": 0.5789473684210527,
+        "10": 0.8157894736842105
+      },
+      "queries": [
+        {
+          "id": "d01",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "对一张已经完成的工单再调用 start，会在哪一步被拒绝？返回什么？",
+          "group_ranks": [
+            8,
+            9
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/unit/test_work_order_transitions.py#L23-L54",
+          "top1_distance": 0.341331422328949
+        },
+        {
+          "id": "d02",
+          "type": "howto",
+          "metric": "coverage",
+          "query": "本机没装 Docker，只想先跑不依赖数据库的测试，命令是什么？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
+          "top1_distance": 0.39219218492507935
+        },
+        {
+          "id": "d03",
+          "type": "issue",
+          "metric": "coverage",
+          "query": "按 README 在新机器上执行 make setup，第一步就失败，提示找不到 Python 解释器，怎么办？",
+          "group_ranks": [
+            3,
+            9
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 1.0
+          },
+          "top1": "mineops:Dockerfile#L1-L13",
+          "top1_distance": 0.4113892912864685
+        },
+        {
+          "id": "d04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "注册资产时 external_id 重复了，接口返回什么错误？在哪里处理的？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/api/assets.py#L21-L63",
+          "top1_distance": 0.3474089503288269
+        },
+        {
+          "id": "d05",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单的事件历史为什么按版本号排序，而不是按创建时间？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L96-L116",
+          "top1_distance": 0.458499550819397
+        },
+        {
+          "id": "d06",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "请求体里多传了一个接口不认识的字段，会发生什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/base.py#L4-L19",
+          "top1_distance": 0.3412776589393616
+        },
+        {
+          "id": "d07",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "一次请求里的工单状态修改和审计事件，是怎么保证一起提交或一起回滚的？",
+          "group_ranks": [
+            null,
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 0.5
+          },
+          "top1": "fieldops:app/api/work_orders.py#L115-L217",
+          "top1_distance": 0.345819890499115
+        },
+        {
+          "id": "d08",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "两个项目分别是怎么防止重复写入的？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/ROADMAP.md#L1-L50",
+          "top1_distance": 0.49434733390808105
+        },
+        {
+          "id": "d09",
+          "type": "howto",
+          "metric": "hit",
+          "query": "想在本地造一批大数据量的工单来测查询性能，怎么做？",
+          "group_ranks": [
+            6
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_seed.py#L1-L22",
+          "top1_distance": 0.4091971516609192
+        },
+        {
+          "id": "d10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "CI 里依次跑了哪些检查？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.github/workflows/ci.yml#L1-L22",
+          "top1_distance": 0.39140909910202026
+        },
+        {
+          "id": "d11",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "同一条遥测事件被投递了两次，会不会重复入库？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3481045961380005
+        },
+        {
+          "id": "d12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "乱序到达的旧遥测事件会不会把设备的最新状态覆盖掉？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3301604986190796
+        },
+        {
+          "id": "d13",
+          "type": "config",
+          "metric": "hit",
+          "query": "发动机温度和振动分别超过多少会被判定为告警和严重？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/tools.py#L25-L190",
+          "top1_distance": 0.43270033597946167
+        },
+        {
+          "id": "d14",
+          "type": "config",
+          "metric": "hit",
+          "query": "怎么把 copilot 从确定性模式切换成 OpenAI 模型？要配哪些环境变量？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/config.py#L8-L30",
+          "top1_distance": 0.32584846019744873
+        },
+        {
+          "id": "d15",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 提出的处置动作在执行前要经过什么审批？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.4346466660499573
+        },
+        {
+          "id": "d16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "如果 copilot 在结论里引用了一个不存在的证据 ID，会怎样？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/__init__.py#L1-L1",
+          "top1_distance": 0.40275585651397705
+        },
+        {
+          "id": "d17",
+          "type": "howto",
+          "metric": "hit",
+          "query": "用 docker compose 启动完整环境，会起哪些服务？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
+          "top1_distance": 0.3863280415534973
+        },
+        {
+          "id": "d18",
+          "type": "ambiguous",
+          "metric": "hit",
+          "query": "怎么把服务跑起来？",
+          "group_ranks": [
+            10
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:README.md#L42-L90",
+          "top1_distance": 0.4116658568382263
+        },
+        {
+          "id": "d19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的 webhook 签名校验是在哪里实现的？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.46973031759262085
+        }
+      ]
+    },
+    "rrf": {
+      "mean": {
+        "1": 0.2631578947368421,
+        "3": 0.4473684210526316,
+        "5": 0.5789473684210527,
+        "10": 0.8157894736842105
+      },
+      "queries": [
+        {
+          "id": "d01",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "对一张已经完成的工单再调用 start，会在哪一步被拒绝？返回什么？",
+          "group_ranks": [
+            8,
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/unit/test_work_order_transitions.py#L75-L79",
+          "top1_distance": 0.3594585061073303
+        },
+        {
+          "id": "d02",
+          "type": "howto",
+          "metric": "coverage",
+          "query": "本机没装 Docker，只想先跑不依赖数据库的测试，命令是什么？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L1-L10",
+          "top1_distance": 0.4012543559074402
+        },
+        {
+          "id": "d03",
+          "type": "issue",
+          "metric": "coverage",
+          "query": "按 README 在新机器上执行 make setup，第一步就失败，提示找不到 Python 解释器，怎么办？",
+          "group_ranks": [
+            4,
+            9
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.5,
+            "10": 1.0
+          },
+          "top1": "mineops:Dockerfile#L1-L13",
+          "top1_distance": 0.4113892912864685
+        },
+        {
+          "id": "d04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "注册资产时 external_id 重复了，接口返回什么错误？在哪里处理的？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/api/assets.py#L21-L63",
+          "top1_distance": 0.3474089503288269
+        },
+        {
+          "id": "d05",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单的事件历史为什么按版本号排序，而不是按创建时间？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/models/work_order_event.py#L19-L72",
+          "top1_distance": 0.45868241786956787
+        },
+        {
+          "id": "d06",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "请求体里多传了一个接口不认识的字段，会发生什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/base.py#L4-L19",
+          "top1_distance": 0.3412776589393616
+        },
+        {
+          "id": "d07",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "一次请求里的工单状态修改和审计事件，是怎么保证一起提交或一起回滚的？",
+          "group_ranks": [
+            null,
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 0.5
+          },
+          "top1": "fieldops:app/api/work_orders.py#L115-L217",
+          "top1_distance": 0.345819890499115
+        },
+        {
+          "id": "d08",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "两个项目分别是怎么防止重复写入的？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L281-L330",
+          "top1_distance": 0.5090836882591248
+        },
+        {
+          "id": "d09",
+          "type": "howto",
+          "metric": "hit",
+          "query": "想在本地造一批大数据量的工单来测查询性能，怎么做？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L81-L129",
+          "top1_distance": 0.4178784489631653
+        },
+        {
+          "id": "d10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "CI 里依次跑了哪些检查？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.github/workflows/ci.yml#L1-L22",
+          "top1_distance": 0.39140909910202026
+        },
+        {
+          "id": "d11",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "同一条遥测事件被投递了两次，会不会重复入库？",
+          "group_ranks": [
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3481045961380005
+        },
+        {
+          "id": "d12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "乱序到达的旧遥测事件会不会把设备的最新状态覆盖掉？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3301604986190796
+        },
+        {
+          "id": "d13",
+          "type": "config",
+          "metric": "hit",
+          "query": "发动机温度和振动分别超过多少会被判定为告警和严重？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/tools.py#L25-L190",
+          "top1_distance": 0.43270033597946167
+        },
+        {
+          "id": "d14",
+          "type": "config",
+          "metric": "hit",
+          "query": "怎么把 copilot 从确定性模式切换成 OpenAI 模型？要配哪些环境变量？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/config.py#L8-L30",
+          "top1_distance": 0.32584846019744873
+        },
+        {
+          "id": "d15",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 提出的处置动作在执行前要经过什么审批？",
+          "group_ranks": [
+            6
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.4346466660499573
+        },
+        {
+          "id": "d16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "如果 copilot 在结论里引用了一个不存在的证据 ID，会怎样？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/__init__.py#L1-L1",
+          "top1_distance": 0.40275585651397705
+        },
+        {
+          "id": "d17",
+          "type": "howto",
+          "metric": "hit",
+          "query": "用 docker compose 启动完整环境，会起哪些服务？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
+          "top1_distance": 0.3863280415534973
+        },
+        {
+          "id": "d18",
+          "type": "ambiguous",
+          "metric": "hit",
+          "query": "怎么把服务跑起来？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:README.md#L42-L90",
+          "top1_distance": 0.4116658568382263
+        },
+        {
+          "id": "d19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的 webhook 签名校验是在哪里实现的？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.47287070751190186
+        }
+      ]
+    },
+    "zh_scoped": {
+      "mean": {
+        "1": 0.2631578947368421,
+        "3": 0.5,
+        "5": 0.5789473684210527,
+        "10": 0.868421052631579
+      },
+      "queries": [
+        {
+          "id": "d01",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "对一张已经完成的工单再调用 start，会在哪一步被拒绝？返回什么？",
+          "group_ranks": [
+            10,
+            8
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/unit/test_work_order_transitions.py#L75-L79",
+          "top1_distance": 0.3694109320640564
+        },
+        {
+          "id": "d02",
+          "type": "howto",
+          "metric": "coverage",
+          "query": "本机没装 Docker，只想先跑不依赖数据库的测试，命令是什么？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L1-L10",
+          "top1_distance": 0.3894045352935791
+        },
+        {
+          "id": "d03",
+          "type": "issue",
+          "metric": "coverage",
+          "query": "按 README 在新机器上执行 make setup，第一步就失败，提示找不到 Python 解释器，怎么办？",
+          "group_ranks": [
+            4,
+            9
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.5,
+            "10": 1.0
+          },
+          "top1": "mineops:Dockerfile#L1-L13",
+          "top1_distance": 0.40639281272888184
+        },
+        {
+          "id": "d04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "注册资产时 external_id 重复了，接口返回什么错误？在哪里处理的？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/api/assets.py#L21-L63",
+          "top1_distance": 0.3610503077507019
+        },
+        {
+          "id": "d05",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单的事件历史为什么按版本号排序，而不是按创建时间？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/models/work_order_event.py#L19-L72",
+          "top1_distance": 0.3546186685562134
+        },
+        {
+          "id": "d06",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "请求体里多传了一个接口不认识的字段，会发生什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/base.py#L4-L19",
+          "top1_distance": 0.4215776324272156
+        },
+        {
+          "id": "d07",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "一次请求里的工单状态修改和审计事件，是怎么保证一起提交或一起回滚的？",
+          "group_ranks": [
+            null,
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 0.5
+          },
+          "top1": "fieldops:app/api/work_orders.py#L115-L217",
+          "top1_distance": 0.3300175070762634
+        },
+        {
+          "id": "d08",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "两个项目分别是怎么防止重复写入的？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:app/models/work_order_event.py#L19-L72",
+          "top1_distance": 0.4435616135597229
+        },
+        {
+          "id": "d09",
+          "type": "howto",
+          "metric": "hit",
+          "query": "想在本地造一批大数据量的工单来测查询性能，怎么做？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_seed.py#L1-L22",
+          "top1_distance": 0.43511027097702026
+        },
+        {
+          "id": "d10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "CI 里依次跑了哪些检查？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.4763375520706177
+        },
+        {
+          "id": "d11",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "同一条遥测事件被投递了两次，会不会重复入库？",
+          "group_ranks": [
+            8
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3565515875816345
+        },
+        {
+          "id": "d12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "乱序到达的旧遥测事件会不会把设备的最新状态覆盖掉？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3848215341567993
+        },
+        {
+          "id": "d13",
+          "type": "config",
+          "metric": "hit",
+          "query": "发动机温度和振动分别超过多少会被判定为告警和严重？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/tools.py#L14-L22",
+          "top1_distance": 0.4084591865539551
+        },
+        {
+          "id": "d14",
+          "type": "config",
+          "metric": "hit",
+          "query": "怎么把 copilot 从确定性模式切换成 OpenAI 模型？要配哪些环境变量？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/config.py#L8-L30",
+          "top1_distance": 0.34033799171447754
+        },
+        {
+          "id": "d15",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 提出的处置动作在执行前要经过什么审批？",
+          "group_ranks": [
+            6
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.4118238687515259
+        },
+        {
+          "id": "d16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "如果 copilot 在结论里引用了一个不存在的证据 ID，会怎样？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/__init__.py#L1-L1",
+          "top1_distance": 0.3727128505706787
+        },
+        {
+          "id": "d17",
+          "type": "howto",
+          "metric": "hit",
+          "query": "用 docker compose 启动完整环境，会起哪些服务？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
+          "top1_distance": 0.35441166162490845
+        },
+        {
+          "id": "d18",
+          "type": "ambiguous",
+          "metric": "hit",
+          "query": "怎么把服务跑起来？",
+          "group_ranks": [
+            9
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:README.md#L42-L90",
+          "top1_distance": 0.4199710488319397
+        },
+        {
+          "id": "d19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的 webhook 签名校验是在哪里实现的？",
+          "group_ranks": [
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.44580572843551636
+        }
+      ]
+    },
+    "en_scoped": {
+      "mean": {
+        "1": 0.2631578947368421,
+        "3": 0.5263157894736842,
+        "5": 0.6842105263157895,
+        "10": 0.8157894736842105
+      },
+      "queries": [
+        {
+          "id": "d01",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "对一张已经完成的工单再调用 start，会在哪一步被拒绝？返回什么？",
+          "group_ranks": [
+            8,
+            9
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/unit/test_work_order_transitions.py#L23-L54",
+          "top1_distance": 0.341331422328949
+        },
+        {
+          "id": "d02",
+          "type": "howto",
+          "metric": "coverage",
+          "query": "本机没装 Docker，只想先跑不依赖数据库的测试，命令是什么？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L1-L10",
+          "top1_distance": 0.4012543559074402
+        },
+        {
+          "id": "d03",
+          "type": "issue",
+          "metric": "coverage",
+          "query": "按 README 在新机器上执行 make setup，第一步就失败，提示找不到 Python 解释器，怎么办？",
+          "group_ranks": [
+            3,
+            8
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 1.0
+          },
+          "top1": "mineops:Dockerfile#L1-L13",
+          "top1_distance": 0.4113892912864685
+        },
+        {
+          "id": "d04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "注册资产时 external_id 重复了，接口返回什么错误？在哪里处理的？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/api/assets.py#L21-L63",
+          "top1_distance": 0.3474089503288269
+        },
+        {
+          "id": "d05",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单的事件历史为什么按版本号排序，而不是按创建时间？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L96-L116",
+          "top1_distance": 0.458499550819397
+        },
+        {
+          "id": "d06",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "请求体里多传了一个接口不认识的字段，会发生什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/base.py#L4-L19",
+          "top1_distance": 0.3412776589393616
+        },
+        {
+          "id": "d07",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "一次请求里的工单状态修改和审计事件，是怎么保证一起提交或一起回滚的？",
+          "group_ranks": [
+            null,
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 0.5
+          },
+          "top1": "fieldops:app/api/work_orders.py#L115-L217",
+          "top1_distance": 0.345819890499115
+        },
+        {
+          "id": "d08",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "两个项目分别是怎么防止重复写入的？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:app/models/work_order_event.py#L19-L72",
+          "top1_distance": 0.516185998916626
+        },
+        {
+          "id": "d09",
+          "type": "howto",
+          "metric": "hit",
+          "query": "想在本地造一批大数据量的工单来测查询性能，怎么做？",
+          "group_ranks": [
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_seed.py#L1-L22",
+          "top1_distance": 0.4091971516609192
+        },
+        {
+          "id": "d10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "CI 里依次跑了哪些检查？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.4551234841346741
+        },
+        {
+          "id": "d11",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "同一条遥测事件被投递了两次，会不会重复入库？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3481045961380005
+        },
+        {
+          "id": "d12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "乱序到达的旧遥测事件会不会把设备的最新状态覆盖掉？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3301604986190796
+        },
+        {
+          "id": "d13",
+          "type": "config",
+          "metric": "hit",
+          "query": "发动机温度和振动分别超过多少会被判定为告警和严重？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/tools.py#L25-L190",
+          "top1_distance": 0.43270033597946167
+        },
+        {
+          "id": "d14",
+          "type": "config",
+          "metric": "hit",
+          "query": "怎么把 copilot 从确定性模式切换成 OpenAI 模型？要配哪些环境变量？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/config.py#L8-L30",
+          "top1_distance": 0.32584846019744873
+        },
+        {
+          "id": "d15",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 提出的处置动作在执行前要经过什么审批？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.4346466660499573
+        },
+        {
+          "id": "d16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "如果 copilot 在结论里引用了一个不存在的证据 ID，会怎样？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/__init__.py#L1-L1",
+          "top1_distance": 0.40275585651397705
+        },
+        {
+          "id": "d17",
+          "type": "howto",
+          "metric": "hit",
+          "query": "用 docker compose 启动完整环境，会起哪些服务？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
+          "top1_distance": 0.3863280415534973
+        },
+        {
+          "id": "d18",
+          "type": "ambiguous",
+          "metric": "hit",
+          "query": "怎么把服务跑起来？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:README.md#L42-L90",
+          "top1_distance": 0.4116658568382263
+        },
+        {
+          "id": "d19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的 webhook 签名校验是在哪里实现的？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.47287070751190186
+        }
+      ]
+    },
+    "rrf_scoped": {
+      "mean": {
+        "1": 0.2631578947368421,
+        "3": 0.5,
+        "5": 0.6842105263157895,
+        "10": 0.868421052631579
+      },
+      "queries": [
+        {
+          "id": "d01",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "对一张已经完成的工单再调用 start，会在哪一步被拒绝？返回什么？",
+          "group_ranks": [
+            8,
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/unit/test_work_order_transitions.py#L75-L79",
+          "top1_distance": 0.3594585061073303
+        },
+        {
+          "id": "d02",
+          "type": "howto",
+          "metric": "coverage",
+          "query": "本机没装 Docker，只想先跑不依赖数据库的测试，命令是什么？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L1-L10",
+          "top1_distance": 0.4012543559074402
+        },
+        {
+          "id": "d03",
+          "type": "issue",
+          "metric": "coverage",
+          "query": "按 README 在新机器上执行 make setup，第一步就失败，提示找不到 Python 解释器，怎么办？",
+          "group_ranks": [
+            4,
+            8
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.5,
+            "10": 1.0
+          },
+          "top1": "mineops:Dockerfile#L1-L13",
+          "top1_distance": 0.4113892912864685
+        },
+        {
+          "id": "d04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "注册资产时 external_id 重复了，接口返回什么错误？在哪里处理的？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/api/assets.py#L21-L63",
+          "top1_distance": 0.3474089503288269
+        },
+        {
+          "id": "d05",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单的事件历史为什么按版本号排序，而不是按创建时间？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/models/work_order_event.py#L19-L72",
+          "top1_distance": 0.45868241786956787
+        },
+        {
+          "id": "d06",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "请求体里多传了一个接口不认识的字段，会发生什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/base.py#L4-L19",
+          "top1_distance": 0.3412776589393616
+        },
+        {
+          "id": "d07",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "一次请求里的工单状态修改和审计事件，是怎么保证一起提交或一起回滚的？",
+          "group_ranks": [
+            null,
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 0.5
+          },
+          "top1": "fieldops:app/api/work_orders.py#L115-L217",
+          "top1_distance": 0.345819890499115
+        },
+        {
+          "id": "d08",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "两个项目分别是怎么防止重复写入的？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:app/models/work_order_event.py#L19-L72",
+          "top1_distance": 0.516185998916626
+        },
+        {
+          "id": "d09",
+          "type": "howto",
+          "metric": "hit",
+          "query": "想在本地造一批大数据量的工单来测查询性能，怎么做？",
+          "group_ranks": [
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_seed.py#L1-L22",
+          "top1_distance": 0.4091971516609192
+        },
+        {
+          "id": "d10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "CI 里依次跑了哪些检查？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.4551234841346741
+        },
+        {
+          "id": "d11",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "同一条遥测事件被投递了两次，会不会重复入库？",
+          "group_ranks": [
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3481045961380005
+        },
+        {
+          "id": "d12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "乱序到达的旧遥测事件会不会把设备的最新状态覆盖掉？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.3301604986190796
+        },
+        {
+          "id": "d13",
+          "type": "config",
+          "metric": "hit",
+          "query": "发动机温度和振动分别超过多少会被判定为告警和严重？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/tools.py#L14-L22",
+          "top1_distance": 0.47038841247558594
+        },
+        {
+          "id": "d14",
+          "type": "config",
+          "metric": "hit",
+          "query": "怎么把 copilot 从确定性模式切换成 OpenAI 模型？要配哪些环境变量？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/config.py#L8-L30",
+          "top1_distance": 0.32584846019744873
+        },
+        {
+          "id": "d15",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 提出的处置动作在执行前要经过什么审批？",
+          "group_ranks": [
+            6
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.4346466660499573
+        },
+        {
+          "id": "d16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "如果 copilot 在结论里引用了一个不存在的证据 ID，会怎样？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/__init__.py#L1-L1",
+          "top1_distance": 0.40275585651397705
+        },
+        {
+          "id": "d17",
+          "type": "howto",
+          "metric": "hit",
+          "query": "用 docker compose 启动完整环境，会起哪些服务？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
+          "top1_distance": 0.3863280415534973
+        },
+        {
+          "id": "d18",
+          "type": "ambiguous",
+          "metric": "hit",
+          "query": "怎么把服务跑起来？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:README.md#L42-L90",
+          "top1_distance": 0.4116658568382263
+        },
+        {
+          "id": "d19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的 webhook 签名校验是在哪里实现的？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.47287070751190186
+        }
+      ]
+    }
+  }
+}

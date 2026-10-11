@@ -1,0 +1,26 @@
+{
+  "note": "English translations of the demo20 Chinese queries by DeepSeek deepseek-v4-flash through a Dify workflow on 2026-10-11 (temperature 0, max_tokens 1024, reasoning separated). Prompt: translate faithfully, keep identifiers, file names, commands and product names, add nothing, do not answer, output only the translation. One run per query, except d15: its first run returned an empty string because reasoning used all 1024 tokens (finish_reason length); three reruns gave two different wordings and one more empty output, and the first non-empty one is kept.",
+  "translator": "deepseek-v4-flash via Dify 1.17.1",
+  "queries": {
+    "d01": "When start is called again on an already completed work order, at which step will it be rejected? What is returned?",
+    "d02": "Docker is not installed on this machine, and I only want to first run tests that do not depend on the database. What is the command?",
+    "d03": "Following the README, I ran make setup on a new machine, but it fails at the first step, saying it cannot find the Python interpreter. What should I do?",
+    "d04": "When registering an asset, if external_id is duplicated, what error does the interface return? Where is it handled?",
+    "d05": "Why is the event history of a ticket sorted by version number instead of by creation time?",
+    "d06": "What happens if an extra field that the API does not recognize is passed in the request body?",
+    "d07": "How are the work order status modification and audit event in a single request guaranteed to be committed or rolled back together?",
+    "d08": "How do the two projects respectively prevent duplicate writes?",
+    "d09": "I want to create a batch of work orders with a large data volume locally to test query performance. How should I do it?",
+    "d10": "What checks are run sequentially in CI?",
+    "d11": "If the same telemetry event is delivered twice, will it be stored twice?",
+    "d12": "Will old telemetry events arriving out of order overwrite the device's latest state?",
+    "d13": "What values must engine temperature and vibration respectively exceed to be judged as warning and critical?",
+    "d14": "How do I switch copilot from deterministic mode to an OpenAI model? Which environment variables need to be configured?",
+    "d15": "What approval must the response actions proposed by copilot go through before execution?",
+    "d16": "What happens if copilot references a nonexistent evidence ID in the conclusion?",
+    "d17": "When starting the complete environment with docker compose, which services will be started?",
+    "d18": "How do you get the service running?",
+    "d19": "Where is the webhook signature verification for fieldops implemented?",
+    "d20": "Where is the Kafka consumer group ID for mineops configured?"
+  }
+}

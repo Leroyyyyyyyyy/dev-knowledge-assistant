@@ -13,12 +13,13 @@ Arms (each scored with its own top_k per cut-off):
   *_scoped      the same, restricted to the repositories the evidence is in
                 (what the service gets once the repository is settled)
 
-Translations: evals/datasets/demo20/queries_en_llm.json (see its note).
-Usage: uv run python -m evals.experiments.demo20_fusion
+Translations: a file in evals/datasets/demo20/ (see each file's note).
+Usage: uv run python -m evals.experiments.demo20_fusion [queries_en_llm.json | queries_en_deepseek.json]
 """
 
 import json
 import os
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -34,8 +35,7 @@ from evals.experiments.demo20_scope import labeled_repos, take_turns
 from evals.scoring import K_VALUES
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-REPORT_PATH = REPO_ROOT / "evals" / "reports" / "demo20_fusion.json"
-TRANSLATIONS_PATH = DATASET_DIR / "queries_en_llm.json"
+DEFAULT_TRANSLATIONS = "queries_en_llm.json"
 ARMS = ["zh", "en", "rrf", "zh_scoped", "en_scoped", "rrf_scoped"]
 
 # Each query's list is this deep before fusing, and the usual RRF constant.
@@ -82,6 +82,14 @@ def run_arm(arm: str, collection, zh_embedding, en_embedding, repos, top_k: int)
 
 
 def main() -> None:
+    translations_name = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_TRANSLATIONS
+    translations_path = DATASET_DIR / translations_name
+    # Keep the first report's name for the default file, so earlier results stay where they were.
+    if translations_name == DEFAULT_TRANSLATIONS:
+        report_path = REPO_ROOT / "evals" / "reports" / "demo20_fusion.json"
+    else:
+        report_path = REPO_ROOT / "evals" / "reports" / f"demo20_fusion_{translations_path.stem.removeprefix('queries_en_')}.json"
+
     settings = Settings()
     connection = connect(settings.db_path)
     version_row = active_version(connection)
@@ -92,7 +100,7 @@ def main() -> None:
     for repo_id, frozen_commit in dataset["repos"].items():
         if manifest[repo_id]["commit"] != frozen_commit:
             raise SystemExit(f"active index has {repo_id}@{manifest[repo_id]['commit']}, demo20 is frozen at {frozen_commit}")
-    translations = json.loads(TRANSLATIONS_PATH.read_text(encoding="utf-8"))["queries"]
+    translations = json.loads(translations_path.read_text(encoding="utf-8"))["queries"]
 
     collection = chromadb.PersistentClient(path=str(settings.chroma_dir)).get_collection(collection_name(version_row["version"]))
     encoder = SentenceTransformerEncoder(version_row["embed_model"], settings.embed_batch_size)
@@ -113,6 +121,7 @@ def main() -> None:
                 row["scores"][k] = per_k[k]["scores"][k]
             rows[arm].append(row)
 
+    print(f"translations {translations_name}")
     print(f"index {version_row['version']} ({version_row['embed_model']}), {len(scored)} scored queries\n")
     header = "arm".ljust(12)
     for k in K_VALUES:
@@ -131,14 +140,14 @@ def main() -> None:
             cells.append(f"{rows[arm][index]['scores'][5]:.2f}")
         print(f"  {item['id']} {item['type']:<16} {'  '.join(cells)}")
 
-    REPORT_PATH.write_text(
+    report_path.write_text(
         json.dumps(
             {
                 "date": date.today().isoformat(),
                 "index_version": version_row["version"],
                 "embed_model": version_row["embed_model"],
                 "dataset_version": dataset["version"],
-                "translations": TRANSLATIONS_PATH.name,
+                "translations": translations_path.name,
                 "fusion": {"depth": FUSION_DEPTH, "rrf_k": RRF_K},
                 "arms": {arm: {"mean": {k: mean_at(rows[arm], k) for k in K_VALUES}, "queries": rows[arm]} for arm in ARMS},
             },
@@ -148,7 +157,7 @@ def main() -> None:
         + "\n",
         encoding="utf-8",
     )
-    print(f"\nreport: {REPORT_PATH.relative_to(REPO_ROOT)}")
+    print(f"\nreport: {report_path.relative_to(REPO_ROOT)}")
     os._exit(0)
 
 
