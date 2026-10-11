@@ -1,0 +1,26 @@
+{
+  "note": "Faithful English translations of the demo20 Chinese queries, written by the development assistant (Claude) on 2026-10-11 without adding anything from the codebase. Stand-in for an LLM translation step; the service would use its own generation model (DeepSeek), whose output may differ.",
+  "translator": "claude (development assistant)",
+  "queries": {
+    "d01": "If start is called again on a work order that is already completed, at which step is it rejected, and what is returned?",
+    "d02": "Docker is not installed on my machine and I only want to run the tests that do not depend on a database first. What is the command?",
+    "d03": "Following the README, running make setup on a new machine fails at the first step with an error that the Python interpreter cannot be found. What should I do?",
+    "d04": "When registering an asset with a duplicate external_id, what error does the API return, and where is it handled?",
+    "d05": "Why is a work order's event history ordered by version number rather than by creation time?",
+    "d06": "What happens if the request body includes an extra field the API does not recognize?",
+    "d07": "How is it guaranteed that a work order status change and its audit event in one request are committed or rolled back together?",
+    "d08": "How does each of the two projects prevent duplicate writes?",
+    "d09": "How can I generate a large number of work orders locally to test query performance?",
+    "d10": "Which checks does CI run, and in what order?",
+    "d11": "If the same telemetry event is delivered twice, will it be stored twice?",
+    "d12": "Can an old telemetry event that arrives out of order overwrite the device's latest state?",
+    "d13": "Above what engine temperature and vibration values is a reading classified as a warning, and as critical?",
+    "d14": "How do I switch the copilot from deterministic mode to an OpenAI model? Which environment variables need to be set?",
+    "d15": "What approval does an action proposed by the copilot need before it is executed?",
+    "d16": "What happens if the copilot cites an evidence ID that does not exist in its findings?",
+    "d17": "Which services start when the full environment is brought up with docker compose?",
+    "d18": "How do I get the service running?",
+    "d19": "Where is webhook signature verification implemented in fieldops?",
+    "d20": "Where is the Kafka consumer group ID configured in mineops?"
+  }
+}

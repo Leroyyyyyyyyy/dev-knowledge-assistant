@@ -72,7 +72,7 @@
 10. ~~M2 收尾~~ **已完成（2026-10-10）**：澄清步骤和反馈按钮。改流程的方法：在 Dify 里改（编辑器，或把改好的 graph 同步进草稿），在 Dify 里测完再导出，覆盖 `workflows/dify-chatflow.yml`。提交的文件必须是导出结果，不能手改。会话变量的 id 必须是 UUID（NOTES 22）。
 11. **Dify 环境**：在本仓库上级目录 `../dify-1.17.1/docker`（只稀疏检出了 `docker/`）。启动：先开 Docker Desktop，再在那个目录执行 `docker compose up -d`；网页地址 `http://localhost:8090`。它的 `.env` 里改了 `SECRET_KEY`、两个端口绑定、`SSRF_PROXY_ALLOW_PRIVATE_DOMAINS=host.docker.internal`、`APP_WEB_URL` 和 `SERVICE_API_URL`（都设为 `http://localhost:8090`，否则 Dify 显示的链接会少端口）；插件端口通过 `docker-compose.override.yaml` 绑定到本机（直接改变量会让 api 容器起不来，见 NOTES 和 `workflows/README.md`）。Dify 里有两个应用：「研发知识助手」（主应用，2026-10-10 已发布新版，Web 入口是 `http://localhost:8090/chat/<code>`）和「研发知识助手（重新导入验证）」（只用来验证，可以删掉）。Web 应用和 API 只跑**已发布**的版本，改完草稿要记得发布。Dify 的登录会话默认 60 分钟过期，刷新页面就会自动续上。忘了 Dify 密码，可以在 api 容器里运行 `flask reset-password` 自己重置（交互式，要自己输入新密码）；改邮箱用 `flask reset-email`。
 
-12. **下一步建议**：先查 d02 的 `pyproject.toml` 为什么排不进前 10（按仓库合并已试过，没用）；然后做 M3（Issue 草稿和确认提交，需要用户提供测试仓库和只有 Issues 权限的 fine-grained token）。
+12. **下一步建议**：d02 已查清（措辞和语言差异，见 progress.md 的中英文检索实验和 NOTES 26）。中文 + 英文译文一起检索在 demo20 上 @5 有提升，但译文是开发助手写的；要接进服务，先用 DeepSeek 生成译文重跑 `evals/experiments/demo20_fusion.py`；然后做 M3（Issue 草稿和确认提交，需要用户提供测试仓库和只有 Issues 权限的 fine-grained token）。
 
 ## 7. 约定
 
