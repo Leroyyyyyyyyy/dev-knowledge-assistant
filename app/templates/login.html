@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}登录{% endblock %}
+{% block content %}
+<h1>操作者登录</h1>
+{% if not configured %}
+<div class="notice warn">服务没有配置操作者密码（<code>DKA_OPERATOR_PASSWORD</code>，至少 12 个字符），确认页暂时不能使用。</div>
+{% else %}
+<p class="muted">问题单只有登录后的操作者能查看、修改和确认。</p>
+{% if error %}<div class="notice warn">{{ error }}</div>{% endif %}
+<form method="post" action="/login">
+  <input type="hidden" name="next" value="{{ next }}">
+  <label for="password">密码</label>
+  <input id="password" type="password" name="password" autocomplete="current-password" required>
+  <div class="actions"><button class="primary" type="submit">登录</button></div>
+</form>
+{% endif %}
+{% endblock %}

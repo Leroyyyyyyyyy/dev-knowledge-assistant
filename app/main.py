@@ -1,5 +1,5 @@
 """
-FastAPI service: health, readiness and retrieval.
+FastAPI service: retrieval, answer validation, feedback, Issue drafts and the review pages.
 
     DKA_SERVICE_TOKEN=... uv run uvicorn app.main:app
 
@@ -26,15 +26,19 @@ from app.api.schemas import (
     ErrorResponse,
     FeedbackRequest,
     FeedbackResponse,
+    IssueDraftRequest,
+    IssueDraftResponse,
     RetrieveRequest,
     RetrieveResponse,
 )
 from app.feedback import NoAnswerForRun, submit_feedback
 from app.indexing.build import collection_name
+from app.issues.drafts import IdempotencyConflict, create_draft
 from app.retrieval.encoder import Encoder
 from app.retrieval.service import EncoderMismatch, NoActiveIndex, UnknownRepo, retrieve
 from app.settings import Settings
 from app.storage.db import active_version, connect, init_db
+from app.web.review import review_router
 
 logger = logging.getLogger("dka")
 
@@ -258,6 +262,64 @@ def create_app(
             raise ApiError(404, "RUN_NOT_FOUND", str(exc)) from exc
         except NoAnswerForRun as exc:
             raise ApiError(409, "NO_ANSWER_FOR_RUN", str(exc)) from exc
+
+    @app.post(
+        "/api/issue-drafts",
+        response_model=IssueDraftResponse,
+        status_code=201,
+        dependencies=[Depends(require_service_token)],
+        responses={
+            200: {"model": IssueDraftResponse},
+            401: {"model": ErrorResponse},
+            404: {"model": ErrorResponse},
+            409: {"model": ErrorResponse},
+            422: {"model": ErrorResponse},
+        },
+    )
+    def issue_drafts_endpoint(
+        body: IssueDraftRequest,
+        request: Request,
+        connection: sqlite3.Connection = Depends(get_db),
+    ):
+        """
+        Build an Issue draft from an answered run and what the user added. Only
+        creates the draft: confirming and submitting happen on the review page,
+        which this token cannot reach.
+        """
+        try:
+            draft, created = create_draft(
+                connection,
+                idempotency_key=body.idempotency_key,
+                run_id=body.run_id,
+                title=body.title,
+                environment=body.environment,
+                error_output=body.error_output,
+                steps_tried=body.steps_tried,
+                target_repo=settings.issue_repo,
+                request_id=request.state.request_id,
+            )
+        except RunNotFound as exc:
+            raise ApiError(404, "RUN_NOT_FOUND", str(exc)) from exc
+        except NoAnswerForRun as exc:
+            raise ApiError(409, "NO_ANSWER_FOR_RUN", str(exc)) from exc
+        except IdempotencyConflict as exc:
+            raise ApiError(409, "IDEMPOTENCY_CONFLICT", str(exc)) from exc
+
+        result = IssueDraftResponse(
+            draft_id=draft["draft_id"],
+            run_id=draft["run_id"],
+            status=draft["status"],
+            target_repo=draft["target_repo"],
+            revision=draft["revision"],
+            title=draft["title"],
+            missing=draft["missing"],
+            warnings=draft["warnings"],
+            review_url=settings.public_base_url.rstrip("/") + "/review/" + draft["draft_id"],
+            created=created,
+        )
+        return JSONResponse(status_code=201 if created else 200, content=result.model_dump())
+
+    app.include_router(review_router(settings, get_db))
 
     return app
 

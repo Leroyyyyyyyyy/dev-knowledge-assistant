@@ -35,6 +35,19 @@ class Settings(BaseSettings):
     # An answer must be submitted within this many minutes of its retrieval run.
     answer_window_minutes: int = Field(default=60, ge=1)
 
+    # --- Issue drafts and the review pages (M3) ---
+    # Password for the shared demo operator who reviews and confirms drafts.
+    # Without it the review pages refuse to log anyone in.
+    operator_password: str | None = None
+    # The only repository Issues may be filed in, as "owner/name". Drafts can be
+    # created without it, but nothing can be submitted.
+    issue_repo: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+    # Where the review pages are reachable, for the link returned to Dify.
+    public_base_url: str = "http://localhost:8077"
+    session_hours: int = Field(default=8, ge=1)
+    # Set true when served over HTTPS, so the session cookie is never sent in clear.
+    cookie_secure: bool = False
+
     @property
     def db_path(self) -> Path:
         return self.data_dir / "app.sqlite3"

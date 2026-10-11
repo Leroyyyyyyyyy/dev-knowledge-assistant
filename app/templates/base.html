@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}问题单确认{% endblock %} · 研发知识助手</title>
+<style>
+  :root { --fg: #1f2328; --muted: #59636e; --line: #d1d9e0; --bg: #ffffff; --panel: #f6f8fa; --accent: #0969da; --warn-bg: #fff8c5; --warn-line: #d4a72c; --ok-bg: #dafbe1; --ok-line: #4ac26b; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg: #e6edf3; --muted: #9198a1; --line: #3d444d; --bg: #0d1117; --panel: #151b23; --accent: #4493f8; --warn-bg: #3b2e00; --warn-line: #9e6a03; --ok-bg: #0f2e1a; --ok-line: #2ea043; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; }
+  header.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 20px; }
+  header.top a { color: var(--fg); text-decoration: none; font-weight: 600; }
+  h1 { font-size: 22px; margin: 0 0 12px; }
+  h2 { font-size: 16px; margin: 28px 0 8px; }
+  .muted { color: var(--muted); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+  .notice { border-radius: 8px; padding: 10px 14px; margin: 12px 0; border: 1px solid; }
+  .notice.warn { background: var(--warn-bg); border-color: var(--warn-line); }
+  .notice.ok { background: var(--ok-bg); border-color: var(--ok-line); }
+  dl.meta { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+  dl.meta dt { color: var(--muted); }
+  dl.meta dd { margin: 0; overflow-wrap: anywhere; }
+  label { display: block; font-weight: 600; margin: 16px 0 6px; }
+  input[type=text], input[type=password], textarea { width: 100%; font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+  textarea { min-height: 420px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.5; }
+  button { font: inherit; border-radius: 6px; padding: 8px 16px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  a { color: var(--accent); }
+  form.inline { display: inline; margin: 0; }
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+  <a href="/review">研发知识助手 · 问题单</a>
+  {% if csrf_token %}
+  <form class="inline" method="post" action="/logout">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit">退出登录</button>
+  </form>
+  {% endif %}
+</header>
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

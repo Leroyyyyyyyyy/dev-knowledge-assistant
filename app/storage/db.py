@@ -114,6 +114,49 @@ MIGRATIONS = {
     -- run can be reproduced and evaluated with exactly what was searched.
     ALTER TABLE runs ADD COLUMN query_en TEXT;
     """,
+    6: """
+    -- Issue drafts (M3). The draft row carries the submission state; its text
+    -- lives in revisions, so an edit never overwrites what was shown before.
+    CREATE TABLE issue_drafts (
+        draft_id          TEXT PRIMARY KEY,
+        -- A caller retrying the same request (Dify) gets the same draft back.
+        idempotency_key   TEXT NOT NULL UNIQUE,
+        request_hash      TEXT NOT NULL,
+        run_id            TEXT NOT NULL REFERENCES runs (run_id),
+        answer_id         TEXT NOT NULL REFERENCES answers (answer_id),
+        target_repo       TEXT,
+        status            TEXT NOT NULL CHECK (status IN ('draft', 'submitting', 'created', 'failed', 'unknown')),
+        current_revision  INTEGER NOT NULL,
+        -- What the user did not provide when the draft was made (JSON list of labels).
+        missing_fields    TEXT NOT NULL,
+        issue_url         TEXT,
+        issue_number      INTEGER,
+        failure_reason    TEXT,
+        request_id        TEXT NOT NULL,
+        created_at        TEXT NOT NULL,
+        updated_at        TEXT NOT NULL
+    );
+
+    CREATE TABLE draft_revisions (
+        draft_id    TEXT NOT NULL REFERENCES issue_drafts (draft_id),
+        revision    INTEGER NOT NULL,
+        title       TEXT NOT NULL,
+        body        TEXT NOT NULL,
+        body_hash   TEXT NOT NULL,   -- what a confirmation is bound to
+        author      TEXT NOT NULL CHECK (author IN ('template', 'operator')),
+        created_at  TEXT NOT NULL,
+        PRIMARY KEY (draft_id, revision)
+    );
+
+    -- Operator login for the review pages. Only a hash of the session token is
+    -- stored, so reading the database does not hand out live sessions.
+    CREATE TABLE operator_sessions (
+        token_hash  TEXT PRIMARY KEY,
+        csrf_token  TEXT NOT NULL,
+        created_at  TEXT NOT NULL,
+        expires_at  TEXT NOT NULL
+    );
+    """,
 }
 
 SCHEMA_VERSION = max(MIGRATIONS)

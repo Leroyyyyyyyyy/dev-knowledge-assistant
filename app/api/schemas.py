@@ -122,3 +122,30 @@ class FeedbackResponse(BaseModel):
     comment: str | None
     created_at: str
     updated_at: str
+
+
+class IssueDraftRequest(RequestModel):
+    # Stable per "make an Issue from this answer" action, so a retried request
+    # returns the same draft instead of creating a second submittable one.
+    idempotency_key: str = Field(pattern=r"^[A-Za-z0-9_-]{8,128}$")
+    run_id: str = Field(pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+    title: str | None = Field(default=None, max_length=200)
+    # Only what the user actually provided. Left out means 未提供, never invented.
+    environment: str | None = Field(default=None, max_length=2000)
+    error_output: str | None = Field(default=None, max_length=10000)
+    steps_tried: str | None = Field(default=None, max_length=4000)
+
+
+class IssueDraftResponse(BaseModel):
+    draft_id: str
+    run_id: str
+    status: Literal["draft", "submitting", "created", "failed", "unknown"]
+    target_repo: str | None
+    revision: int
+    title: str
+    missing: list[str]
+    warnings: list[str]
+    review_url: str
+    # False when this request was a retry that returned an existing draft.
+    created: bool
+

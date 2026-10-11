@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ draft.title }}{% endblock %}
+{% block content %}
+<h1>确认问题单</h1>
+
+{% if saved %}<div class="notice ok">已保存为第 {{ draft.revision }} 版。之前的确认对新版本不再有效。</div>{% endif %}
+{% for warning in draft.warnings %}
+<div class="notice warn">⚠ {{ warning }}。提交到公开仓库前请删掉或改写。</div>
+{% endfor %}
+
+<div class="panel">
+  <dl class="meta">
+    <dt>目标仓库</dt>
+    <dd>{% if draft.target_repo %}<strong>{{ draft.target_repo }}</strong>{% else %}未配置（<code>DKA_ISSUE_REPO</code>），这份草稿不能提交{% endif %}</dd>
+    <dt>状态</dt><dd>{{ status_label }}</dd>
+    <dt>版本</dt><dd>第 {{ draft.revision }} 版（{{ "模板生成" if draft.author == "template" else "人工修改" }}）</dd>
+    <dt>正文指纹</dt><dd><code>{{ draft.body_hash[:12] }}</code></dd>
+    <dt>检索记录</dt><dd><code>{{ draft.run_id }}</code></dd>
+    {% if draft.missing %}<dt>未提供</dt><dd>{{ draft.missing | join("、") }}</dd>{% endif %}
+    {% if draft.issue_url %}<dt>Issue</dt><dd><a href="{{ draft.issue_url }}" rel="noopener noreferrer">{{ draft.issue_url }}</a></dd>{% endif %}
+  </dl>
+</div>
+
+{% if draft.target_repo and configured_repo and draft.target_repo != configured_repo %}
+<div class="notice warn">服务现在配置的仓库是 {{ configured_repo }}，和这份草稿创建时的目标不同。提交时以草稿上的目标仓库为准。</div>
+{% endif %}
+
+{% if editable %}
+<form method="post" action="/review/{{ draft.draft_id }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="hidden" name="revision" value="{{ draft.revision }}">
+  <label for="title">标题</label>
+  <input id="title" type="text" name="title" value="{{ draft.title }}" maxlength="200" required>
+  <label for="body">正文（Markdown）</label>
+  <textarea id="body" name="body" required>{{ draft.body }}</textarea>
+  <div class="actions">
+    <button type="submit">保存修改</button>
+    <span class="muted">保存后版本号加一，需要重新确认。</span>
+  </div>
+</form>
+{% else %}
+<h2>{{ draft.title }}</h2>
+<pre class="panel" style="white-space: pre-wrap; overflow-wrap: anywhere;">{{ draft.body }}</pre>
+{% endif %}
+
+<h2>确认提交</h2>
+<div class="panel">
+  <p>确认的是<strong>第 {{ draft.revision }} 版</strong>（指纹 <code>{{ draft.body_hash[:12] }}</code>），提交到 <strong>{{ draft.target_repo or "未配置的仓库" }}</strong>。</p>
+  <div class="actions">
+    <button class="primary" type="button" disabled>确认并提交到 GitHub</button>
+    <span class="muted">提交功能还没接入：需要测试仓库和只有 Issues 权限的 token。</span>
+  </div>
+</div>
+{% endblock %}
