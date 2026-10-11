@@ -15,9 +15,10 @@ Start → is it a feedback button message? ("反馈：<label> run=<run_id>")
            → decide scope (code: an explicit repo name wins over the model)
              ├─ unclear, not asked yet → remember the question (conversation variable)
              │                          → ask, with buttons: fieldops / mineops / 两个都查
-             └─ settled → clear the pending question → retrieval and answer below
+             └─ settled → clear the pending question → translate the settled question to English
+                          (LLM, temperature 0; empty on failure) → retrieval and answer below
 
-build request (code) → POST /api/retrieve (with repo_id when one repo) → parse (code)
+build request (code) → POST /api/retrieve (repo_id when one repo; query_en when the translation is not empty) → parse (code)
   ├─ error (proxy 503 = service unreachable; service JSON error with request_id) → message
   ├─ no_evidence → "no relevant material" message
   └─ ok → LLM (JSON: status, answer_text, cited handles C1..Cn)
@@ -31,6 +32,8 @@ build request (code) → POST /api/retrieve (with repo_id when one repo) → par
 ```
 
 **Clarification asks at most once.** After the question, the next message is read as the answer: a repo name, "两个都查", or a short reply the model can place. The original question is what gets retrieved and answered. If the reply still does not settle it, both repositories are searched and the answer says so. A long reply that names no repository is treated as a new question.
+
+**The question is also searched in English.** The service searches the Chinese question and its English translation and fuses the two rankings (RRF); on demo20, within the right repository, @5 went from 58% to 68% with no question getting worse (`docs/progress.md`). The translated text is the settled question, so after a clarification round it is the original question, not the reply. If translation fails or returns nothing, the request carries no `query_en` and retrieval uses the question alone.
 
 **Feedback buttons carry the run id.** Each accepted answer ends with Dify markdown buttons (`<button data-message="...">`); clicking one sends `反馈：<label> run=<run_id>` as the next message, which the flow turns into `POST /api/feedback`. Because the run id is in the message, a click on an older answer is recorded against that answer. Dify's built-in like/dislike is still shown but is not wired to the service.
 
@@ -84,3 +87,12 @@ Draft runs against the real service, index and model (`docs/progress.md` has the
 | Feedback "解决了", then "引用不对" for the same answer | One feedback row, holding the later answer; the model's own `answered` status unchanged |
 | Feedback for an unknown run | "no record" message with request_id, nothing stored |
 | Published web app | Both sets of buttons render and send; a click on "解决了" stored the feedback row |
+
+## Tested on 2026-10-11 (English translation in retrieval)
+
+| Case | Result |
+| --- | --- |
+| d11 "同一条遥测事件被投递了两次" | The service received `query_en`; the answer cites `repository.py` and its test, which the Chinese question alone did not retrieve in the top 5 |
+| "怎么把服务跑起来？" → click fieldops | Translated "How do I get the service running?" (the original question, not the reply); answered from the fieldops README |
+| Each run | `runs.query_en` and the repository filter are recorded |
+

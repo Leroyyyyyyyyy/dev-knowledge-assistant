@@ -27,7 +27,7 @@ import chromadb
 
 from app.indexing.build import collection_name
 from app.retrieval.encoder import SentenceTransformerEncoder
-from app.retrieval.service import search
+from app.retrieval.service import FUSION_DEPTH, RRF_K, fuse, search
 from app.settings import Settings
 from app.storage.db import active_version, connect
 from evals.experiments.demo20_retrieval import DATASET_DIR, load_dataset, mean_at, score_query
@@ -38,33 +38,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_TRANSLATIONS = "queries_en_llm.json"
 ARMS = ["zh", "en", "rrf", "zh_scoped", "en_scoped", "rrf_scoped"]
 
-# Each query's list is this deep before fusing, and the usual RRF constant.
-FUSION_DEPTH = 20
-RRF_K = 60
-
-
 def ranked(collection, embedding: list[float], repos: list[str] | None, top_k: int) -> list[dict]:
     if repos is None:
         return search(collection, embedding, None, top_k)
     if len(repos) == 1:
         return search(collection, embedding, repos[0], top_k)
     return take_turns(collection, embedding, repos, top_k)
-
-
-def fuse(lists: list[list[dict]], top_k: int) -> list[dict]:
-    """Reciprocal rank fusion: a chunk scores 1 / (RRF_K + rank) in every list it appears in."""
-    scores = {}
-    hits_by_id = {}
-    for hits in lists:
-        for rank, hit in enumerate(hits, start=1):
-            chunk_id = hit["chunk_id"]
-            scores[chunk_id] = scores.get(chunk_id, 0.0) + 1.0 / (RRF_K + rank)
-            hits_by_id[chunk_id] = hit
-    ordered = sorted(scores, key=lambda chunk_id: scores[chunk_id], reverse=True)
-    fused = []
-    for chunk_id in ordered[:top_k]:
-        fused.append(hits_by_id[chunk_id])
-    return fused
 
 
 def run_arm(arm: str, collection, zh_embedding, en_embedding, repos, top_k: int) -> list[dict]:

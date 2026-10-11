@@ -109,6 +109,11 @@ MIGRATIONS = {
     -- answer quotes verbatim from a cited chunk (e.g. a docs URL in a README).
     ALTER TABLE run_chunks ADD COLUMN content TEXT;
     """,
+    5: """
+    -- The English translation searched alongside the question, if any, so a
+    -- run can be reproduced and evaluated with exactly what was searched.
+    ALTER TABLE runs ADD COLUMN query_en TEXT;
+    """,
 }
 
 SCHEMA_VERSION = max(MIGRATIONS)

@@ -161,6 +161,7 @@ def create_app(
         query = body.query.strip()
         if not query:
             raise ApiError(422, "INVALID_REQUEST", "query: must not be blank")
+        query_en = (body.query_en or "").strip() or None
         top_k = body.top_k or settings.top_k_default
         if top_k > settings.top_k_max:
             raise ApiError(422, "INVALID_REQUEST", f"top_k: must be at most {settings.top_k_max}")
@@ -174,6 +175,7 @@ def create_app(
                 body.repo_id,
                 top_k,
                 request.state.request_id,
+                query_en=query_en,
             )
         except UnknownRepo as exc:
             raise ApiError(422, "UNKNOWN_REPO", str(exc)) from exc

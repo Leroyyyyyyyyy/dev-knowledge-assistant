@@ -17,6 +17,13 @@ from app.retrieval.encoder import Encoder
 from app.storage.db import active_version
 
 
+# Reciprocal rank fusion of the question's and the translation's results: each
+# list is searched this deep, and a chunk scores 1 / (RRF_K + rank) in every
+# list it appears in. 60 is the usual constant from the RRF paper.
+FUSION_DEPTH = 20
+RRF_K = 60
+
+
 class NoActiveIndex(Exception):
     """No index version has been activated yet."""
 
@@ -62,6 +69,26 @@ def search(collection, query_embedding: list[float], repo_id: str | None, top_k:
     return hits
 
 
+def fuse(result_lists: list[list[dict]], top_k: int) -> list[dict]:
+    """
+    Reciprocal rank fusion. A chunk found by both searches keeps the smaller of
+    its two distances, so the reported score is still a real cosine distance.
+    """
+    scores = {}
+    best_hit = {}
+    for hits in result_lists:
+        for rank, hit in enumerate(hits, start=1):
+            chunk_id = hit["chunk_id"]
+            scores[chunk_id] = scores.get(chunk_id, 0.0) + 1.0 / (RRF_K + rank)
+            if chunk_id not in best_hit or hit["distance"] < best_hit[chunk_id]["distance"]:
+                best_hit[chunk_id] = hit
+    ordered = sorted(scores, key=lambda chunk_id: scores[chunk_id], reverse=True)
+    fused = []
+    for chunk_id in ordered[:top_k]:
+        fused.append(best_hit[chunk_id])
+    return fused
+
+
 def retrieve(
     connection: sqlite3.Connection,
     chroma_client,
@@ -70,6 +97,7 @@ def retrieve(
     repo_id: str | None,
     top_k: int,
     request_id: str,
+    query_en: str | None = None,
 ) -> dict:
     started = time.perf_counter()
 
@@ -93,7 +121,12 @@ def retrieve(
         raise UnknownRepo(repo_id, sorted(manifest))
 
     collection = chroma_client.get_collection(collection_name(version))
-    hits = search(collection, encoder.encode_query(query), repo_id, top_k)
+    if query_en is None:
+        hits = search(collection, encoder.encode_query(query), repo_id, top_k)
+    else:
+        query_hits = search(collection, encoder.encode_query(query), repo_id, FUSION_DEPTH)
+        translation_hits = search(collection, encoder.encode_query(query_en), repo_id, FUSION_DEPTH)
+        hits = fuse([query_hits, translation_hits], top_k)
 
     chunks = []
     for rank, hit in enumerate(hits, start=1):
@@ -130,15 +163,16 @@ def retrieve(
     with connection:
         connection.execute(
             """
-            INSERT INTO runs (run_id, request_id, created_at, query, repo_filter, index_version,
+            INSERT INTO runs (run_id, request_id, created_at, query, query_en, repo_filter, index_version,
                               embed_model, top_k, status, latency_ms)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 run_id,
                 request_id,
                 datetime.now(UTC).isoformat(),
                 query,
+                query_en,
                 repo_id,
                 version,
                 version_row["embed_model"],

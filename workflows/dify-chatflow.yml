@@ -338,8 +338,16 @@ workflow:
       type: custom
       zIndex: 0
     - data: {}
-      id: clear_pending-source-build_retrieve-target
+      id: clear_pending-source-translate-target
       source: clear_pending
+      sourceHandle: source
+      target: translate
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: translate-source-build_retrieve-target
+      source: translate
       sourceHandle: source
       target: build_retrieve
       targetHandle: target
@@ -364,10 +372,14 @@ workflow:
       type: custom
       width: 244
     - data:
-        code: "\ndef main(question: str, repo_id: str) -> dict:\n    import json\n\
-          \    payload = {\"query\": question.strip()[:1000], \"top_k\": 8}\n    if\
-          \ repo_id:\n        payload[\"repo_id\"] = repo_id\n    return {\"payload\"\
-          : json.dumps(payload, ensure_ascii=False)}\n"
+        code: "\ndef main(question: str, repo_id: str, translation: str) -> dict:\n\
+          \    import json\n    payload = {\"query\": question.strip()[:1000], \"\
+          top_k\": 8}\n    if repo_id:\n        payload[\"repo_id\"] = repo_id\n \
+          \   # Drop any reasoning that leaked into the text; an empty translation\
+          \ means\n    # \"search the question alone\", which the service also does\
+          \ for blank.\n    english = translation.split(\"</think>\")[-1].strip()\n\
+          \    if english:\n        payload[\"query_en\"] = english[:1000]\n    return\
+          \ {\"payload\": json.dumps(payload, ensure_ascii=False)}\n"
         code_language: python3
         desc: ''
         outputs:
@@ -385,6 +397,10 @@ workflow:
           - decide_scope
           - repo_id
           variable: repo_id
+        - value_selector:
+          - translate
+          - text
+          variable: translation
       height: 90
       id: build_retrieve
       position:
@@ -1459,7 +1475,7 @@ workflow:
         error_strategy: default-value
         model:
           completion_params:
-            max_tokens: 1024
+            max_tokens: 4096
             temperature: 0
           mode: chat
           name: deepseek-v4-flash
@@ -1701,6 +1717,49 @@ workflow:
         y: 300
       positionAbsolute:
         x: 1800
+        y: 300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        default_value:
+        - key: text
+          type: string
+          value: ''
+        desc: ''
+        error_strategy: default-value
+        model:
+          completion_params:
+            max_tokens: 4096
+            temperature: 0
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: translate-system
+          role: system
+          text: 把用户给的中文问题忠实地翻译成英文。代码标识符、文件名、命令、产品名保持原样。不要补充原文没有的信息，不要回答问题。只输出译文本身，不要加引号或任何说明。
+        - id: translate-user
+          role: user
+          text: '{{#decide_scope.question#}}'
+        reasoning_format: separated
+        selected: false
+        title: 翻译检索问题
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: translate
+      position:
+        x: 2100
+        y: 300
+      positionAbsolute:
+        x: 2100
         y: 300
       sourcePosition: right
       targetPosition: left

@@ -251,3 +251,69 @@ def test_concurrent_requests_do_not_share_connections_across_threads(client, wor
         statuses = list(pool.map(ask, range(64)))
 
     assert statuses == [200] * 64
+
+
+# --- query plus English translation ---------------------------------------
+
+
+def chunk_paths(body: dict) -> list[str]:
+    paths = []
+    for chunk in body["chunks"]:
+        paths.append(chunk["repo_id"] + ":" + chunk["path"])
+    return paths
+
+
+def test_translation_is_searched_and_fused_with_the_query(client, workspace, encoder):
+    build(workspace, encoder)
+    alone = client.post("/api/retrieve", json={"query": "quokka installer", "top_k": 2}, headers=AUTH).json()
+    fused = client.post(
+        "/api/retrieve",
+        json={"query": "quokka installer", "query_en": "walrus dedupe event", "top_k": 2},
+        headers=AUTH,
+    ).json()
+
+    # Precondition: the query alone does not reach the chunk only the translation matches.
+    assert "beta:ingest/events.py" not in chunk_paths(alone)
+    # Fused, each search contributes its best chunk.
+    assert sorted(chunk_paths(fused)) == ["alpha:docs/使用 说明.md", "beta:ingest/events.py"]
+    ranks = []
+    for chunk in fused["chunks"]:
+        ranks.append(chunk["rank"])
+    assert ranks == [1, 2]
+
+
+def test_blank_translation_falls_back_to_the_query_alone(client, workspace, encoder):
+    build(workspace, encoder)
+    alone = client.post("/api/retrieve", json={"query": "walrus dedupe event"}, headers=AUTH).json()
+    blank = client.post("/api/retrieve", json={"query": "walrus dedupe event", "query_en": "   "}, headers=AUTH).json()
+    assert chunk_paths(blank) == chunk_paths(alone)
+
+    connection = connect(workspace["settings"].db_path)
+    stored = connection.execute("SELECT query_en FROM runs WHERE run_id = ?", (blank["run_id"],)).fetchone()
+    connection.close()
+    assert stored["query_en"] is None
+
+
+def test_translation_is_recorded_with_the_run(client, workspace, encoder):
+    build(workspace, encoder)
+    body = client.post(
+        "/api/retrieve", json={"query": "防止重复写入", "query_en": "walrus dedupe event"}, headers=AUTH
+    ).json()
+    connection = connect(workspace["settings"].db_path)
+    run = connection.execute("SELECT query, query_en FROM runs WHERE run_id = ?", (body["run_id"],)).fetchone()
+    connection.close()
+    assert (run["query"], run["query_en"]) == ("防止重复写入", "walrus dedupe event")
+
+
+def test_fused_chunk_keeps_its_closest_distance():
+    from app.retrieval.service import fuse
+
+    def hit(chunk_id, distance):
+        return {"chunk_id": chunk_id, "distance": distance}
+
+    fused = fuse([[hit("a", 0.30), hit("b", 0.40)], [hit("b", 0.20), hit("c", 0.50)]], top_k=3)
+    order = []
+    for item in fused:
+        order.append((item["chunk_id"], item["distance"]))
+    # b is in both lists, so it ranks first, and it reports the smaller distance.
+    assert order == [("b", 0.20), ("a", 0.30), ("c", 0.50)]

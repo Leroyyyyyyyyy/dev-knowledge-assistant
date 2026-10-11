@@ -13,6 +13,11 @@ class RequestModel(BaseModel):
 
 class RetrieveRequest(RequestModel):
     query: str = Field(min_length=1, max_length=1000)
+    # An English translation of the query, searched as well and fused with the
+    # query's results (demo20: @5 58% -> 68% within the right repository).
+    # Optional on purpose: a translation step that fails or returns nothing
+    # should fall back to the query alone, so blank counts as absent.
+    query_en: str | None = Field(default=None, max_length=1000)
     # Omit to search every repository in the active index version.
     repo_id: str | None = Field(default=None, pattern=r"^[a-z0-9][a-z0-9_-]{0,63}$")
     top_k: int | None = Field(default=None, ge=1)

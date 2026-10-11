@@ -727,7 +727,7 @@
             "10": 0.0
           },
           "top1": "fieldops:app/domain/work_order_status.py#L1-L10",
-          "top1_distance": 0.4012543559074402
+          "top1_distance": 0.3894045352935791
         },
         {
           "id": "d03",
@@ -745,7 +745,7 @@
             "10": 1.0
           },
           "top1": "mineops:Dockerfile#L1-L13",
-          "top1_distance": 0.4113892912864685
+          "top1_distance": 0.40639281272888184
         },
         {
           "id": "d04",
@@ -779,7 +779,7 @@
             "10": 1.0
           },
           "top1": "fieldops:app/models/work_order_event.py#L19-L72",
-          "top1_distance": 0.45868241786956787
+          "top1_distance": 0.3546186685562134
         },
         {
           "id": "d06",
@@ -814,7 +814,7 @@
             "10": 0.5
           },
           "top1": "fieldops:app/api/work_orders.py#L115-L217",
-          "top1_distance": 0.345819890499115
+          "top1_distance": 0.3300175070762634
         },
         {
           "id": "d08",
@@ -832,7 +832,7 @@
             "10": 0.0
           },
           "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L281-L330",
-          "top1_distance": 0.5090836882591248
+          "top1_distance": 0.4378916025161743
         },
         {
           "id": "d09",
@@ -849,7 +849,7 @@
             "10": 1.0
           },
           "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L81-L129",
-          "top1_distance": 0.4178784489631653
+          "top1_distance": 0.39035797119140625
         },
         {
           "id": "d10",
@@ -917,7 +917,7 @@
             "10": 1.0
           },
           "top1": "mineops:src/mineops/copilot/tools.py#L25-L190",
-          "top1_distance": 0.43270033597946167
+          "top1_distance": 0.42349773645401
         },
         {
           "id": "d14",
@@ -951,7 +951,7 @@
             "10": 1.0
           },
           "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
-          "top1_distance": 0.4346466660499573
+          "top1_distance": 0.4118238687515259
         },
         {
           "id": "d16",
@@ -968,7 +968,7 @@
             "10": 1.0
           },
           "top1": "mineops:src/mineops/copilot/__init__.py#L1-L1",
-          "top1_distance": 0.40275585651397705
+          "top1_distance": 0.3727128505706787
         },
         {
           "id": "d17",
@@ -985,7 +985,7 @@
             "10": 1.0
           },
           "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
-          "top1_distance": 0.3863280415534973
+          "top1_distance": 0.35441166162490845
         },
         {
           "id": "d18",
@@ -1019,7 +1019,7 @@
             "10": 0.0
           },
           "top1": "fieldops:pyproject.toml#L1-L49",
-          "top1_distance": 0.47287070751190186
+          "top1_distance": 0.44580572843551636
         }
       ]
     },
@@ -1741,7 +1741,7 @@
             "10": 0.0
           },
           "top1": "fieldops:app/domain/work_order_status.py#L1-L10",
-          "top1_distance": 0.4012543559074402
+          "top1_distance": 0.3894045352935791
         },
         {
           "id": "d03",
@@ -1759,7 +1759,7 @@
             "10": 1.0
           },
           "top1": "mineops:Dockerfile#L1-L13",
-          "top1_distance": 0.4113892912864685
+          "top1_distance": 0.40639281272888184
         },
         {
           "id": "d04",
@@ -1793,7 +1793,7 @@
             "10": 1.0
           },
           "top1": "fieldops:app/models/work_order_event.py#L19-L72",
-          "top1_distance": 0.45868241786956787
+          "top1_distance": 0.3546186685562134
         },
         {
           "id": "d06",
@@ -1828,7 +1828,7 @@
             "10": 0.5
           },
           "top1": "fieldops:app/api/work_orders.py#L115-L217",
-          "top1_distance": 0.345819890499115
+          "top1_distance": 0.3300175070762634
         },
         {
           "id": "d08",
@@ -1846,7 +1846,7 @@
             "10": 0.0
           },
           "top1": "fieldops:app/models/work_order_event.py#L19-L72",
-          "top1_distance": 0.516185998916626
+          "top1_distance": 0.4435616135597229
         },
         {
           "id": "d09",
@@ -1931,7 +1931,7 @@
             "10": 1.0
           },
           "top1": "mineops:src/mineops/copilot/tools.py#L14-L22",
-          "top1_distance": 0.47038841247558594
+          "top1_distance": 0.4084591865539551
         },
         {
           "id": "d14",
@@ -1965,7 +1965,7 @@
             "10": 1.0
           },
           "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
-          "top1_distance": 0.4346466660499573
+          "top1_distance": 0.4118238687515259
         },
         {
           "id": "d16",
@@ -1982,7 +1982,7 @@
             "10": 1.0
           },
           "top1": "mineops:src/mineops/copilot/__init__.py#L1-L1",
-          "top1_distance": 0.40275585651397705
+          "top1_distance": 0.3727128505706787
         },
         {
           "id": "d17",
@@ -1999,7 +1999,7 @@
             "10": 1.0
           },
           "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L401-L450",
-          "top1_distance": 0.3863280415534973
+          "top1_distance": 0.35441166162490845
         },
         {
           "id": "d18",
@@ -2033,7 +2033,7 @@
             "10": 1.0
           },
           "top1": "fieldops:pyproject.toml#L1-L49",
-          "top1_distance": 0.47287070751190186
+          "top1_distance": 0.44580572843551636
         }
       ]
     }
