@@ -1,6 +1,6 @@
 # HANDOFF
 
-最后更新：2026-10-10
+最后更新：2026-10-11
 
 ## 1. 当前状态
 
@@ -65,14 +65,14 @@
 4. ~~建 demo20 评测集~~ **已完成并跑过一轮（2026-10-05）**。评测集冻结在当前两个 commit；`demo20_retrieval.py` 开跑前会核对 commit 和所有锚点，commit 一变就会拒绝运行。
    - mineops 的 `Makefile` `setup` 写死了作者本机的解释器路径（Q3 / d03），是真实缺陷，计划当作 M3 的演示素材，**修之前先确认演示是否还要用它**。
 5. **待决定：mineops 的中文学习手册要不要进语料。** 它会吸走中文查询（NOTES 9）。去掉它 bge-m3 @5 47% → 53%，但它对中文用户确实有用（能指到对的文件）。需要作者决定；技术上也可以保留它，同时在检索时限制它在 top-k 里最多占几个位置。
-6. **处理三道所有配置都失败的题**（换模型解决不了）：d02（`pyproject.toml` 永远进不了 top-10）、d08（跨仓库题，要按仓库分别检索再合并）、d18（歧义题，回答层应该先澄清）。
+6. **处理三道所有配置都失败的题**（换模型解决不了）：d02（`pyproject.toml` 永远进不了 top-10）、d08（跨仓库题；2026-10-11 试过按仓库分别检索再合并，没用，每个仓库单独取前 10 也找不到证据，问题在查询太抽象，见 progress.md）、d18（歧义题，回答层应该先澄清）。
 7. **扩大评测集**：19 题每题约 5 个百分点，选不出方案。至少扩到 40 题以上，代码定位以外的题型要补，最好能拿到真实用户的问题。
 8. **多语言 rerank 单变量实验**：bge-m3 + `bge-reranker-v2-m3`（现有的 ms-marco reranker 只支持英文）。
-9. ~~M1 检索服务~~ **核心完成**。剩下的：按仓库分别检索再合并（对应 d08）；进程崩溃后残留的 `building` 记录要能清理（M4 一起做）。
+9. ~~M1 检索服务~~ **核心完成**。剩下的：进程崩溃后残留的 `building` 记录要能清理（M4 一起做）。
 10. ~~M2 收尾~~ **已完成（2026-10-10）**：澄清步骤和反馈按钮。改流程的方法：在 Dify 里改（编辑器，或把改好的 graph 同步进草稿），在 Dify 里测完再导出，覆盖 `workflows/dify-chatflow.yml`。提交的文件必须是导出结果，不能手改。会话变量的 id 必须是 UUID（NOTES 22）。
 11. **Dify 环境**：在本仓库上级目录 `../dify-1.17.1/docker`（只稀疏检出了 `docker/`）。启动：先开 Docker Desktop，再在那个目录执行 `docker compose up -d`；网页地址 `http://localhost:8090`。它的 `.env` 里改了 `SECRET_KEY`、两个端口绑定、`SSRF_PROXY_ALLOW_PRIVATE_DOMAINS=host.docker.internal`、`APP_WEB_URL` 和 `SERVICE_API_URL`（都设为 `http://localhost:8090`，否则 Dify 显示的链接会少端口）；插件端口通过 `docker-compose.override.yaml` 绑定到本机（直接改变量会让 api 容器起不来，见 NOTES 和 `workflows/README.md`）。Dify 里有两个应用：「研发知识助手」（主应用，2026-10-10 已发布新版，Web 入口是 `http://localhost:8090/chat/<code>`）和「研发知识助手（重新导入验证）」（只用来验证，可以删掉）。Web 应用和 API 只跑**已发布**的版本，改完草稿要记得发布。Dify 的登录会话默认 60 分钟过期，刷新页面就会自动续上。忘了 Dify 密码，可以在 api 容器里运行 `flask reset-password` 自己重置（交互式，要自己输入新密码）；改邮箱用 `flask reset-email`。
 
-12. **下一步建议**：先做检索，按仓库分别检索再合并，并查 d02 的 `pyproject.toml` 为什么排不进前 10；然后做 M3（Issue 草稿和确认提交，需要用户提供测试仓库和只有 Issues 权限的 fine-grained token）。
+12. **下一步建议**：先查 d02 的 `pyproject.toml` 为什么排不进前 10（按仓库合并已试过，没用）；然后做 M3（Issue 草稿和确认提交，需要用户提供测试仓库和只有 Issues 权限的 fine-grained token）。
 
 ## 7. 约定
 

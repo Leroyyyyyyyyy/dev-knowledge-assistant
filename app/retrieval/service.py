@@ -32,6 +32,36 @@ class UnknownRepo(Exception):
         self.known = known
 
 
+def search(collection, query_embedding: list[float], repo_id: str | None, top_k: int) -> list[dict]:
+    """
+    The top_k nearest chunks, closest first: in one repository, or across all
+    of them when repo_id is None.
+
+    Across repositories this is one shared ranking. Searching each repository
+    on its own and taking turns was measured on demo20 and was worse (@3 45% ->
+    26%, @5 47% -> 45%): it gives half the slots to a repository the question is
+    not about. See evals/experiments/demo20_scope.py.
+    """
+    where = {"repo_id": repo_id} if repo_id is not None else None
+    result = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k,
+        where=where,
+        include=["documents", "metadatas", "distances"],
+    )
+    hits = []
+    for index in range(len(result["ids"][0])):
+        hits.append(
+            {
+                "chunk_id": result["ids"][0][index],
+                "metadata": result["metadatas"][0][index],
+                "content": result["documents"][0][index],
+                "distance": result["distances"][0][index],
+            }
+        )
+    return hits
+
+
 def retrieve(
     connection: sqlite3.Connection,
     chroma_client,
@@ -63,22 +93,16 @@ def retrieve(
         raise UnknownRepo(repo_id, sorted(manifest))
 
     collection = chroma_client.get_collection(collection_name(version))
-    where = {"repo_id": repo_id} if repo_id is not None else None
-    result = collection.query(
-        query_embeddings=[encoder.encode_query(query)],
-        n_results=top_k,
-        where=where,
-        include=["documents", "metadatas", "distances"],
-    )
+    hits = search(collection, encoder.encode_query(query), repo_id, top_k)
 
     chunks = []
-    for index in range(len(result["ids"][0])):
-        meta = result["metadatas"][0][index]
+    for rank, hit in enumerate(hits, start=1):
+        meta = hit["metadata"]
         remote = manifest[meta["repo_id"]]["remote"]
         chunks.append(
             {
-                "chunk_id": result["ids"][0][index],
-                "rank": index + 1,
+                "chunk_id": hit["chunk_id"],
+                "rank": rank,
                 "repo_id": meta["repo_id"],
                 "commit_sha": meta["commit_sha"],
                 "path": meta["path"],
@@ -86,9 +110,9 @@ def retrieve(
                 "end_line": meta["end_line"],
                 "source_type": meta["source_type"],
                 "symbol": meta["symbol"] or None,
-                "content": result["documents"][0][index],
+                "content": hit["content"],
                 "url": source_url(remote, meta["commit_sha"], meta["path"], meta["start_line"], meta["end_line"]),
-                "score": {"type": "cosine_distance", "value": result["distances"][0][index]},
+                "score": {"type": "cosine_distance", "value": hit["distance"]},
             }
         )
 
