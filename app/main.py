@@ -309,6 +309,7 @@ def create_app(
                 environment=body.environment,
                 error_output=body.error_output,
                 steps_tried=body.steps_tried,
+                notes=body.notes,
                 target_repo=settings.issue_repo,
                 request_id=request.state.request_id,
             )

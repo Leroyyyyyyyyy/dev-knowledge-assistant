@@ -105,6 +105,9 @@ def render(run: sqlite3.Row, answer: sqlite3.Row, chunks: list[sqlite3.Row], fie
 
     lines += ["## 已尝试的步骤", "", fields["steps_tried"] or NOT_PROVIDED, ""]
 
+    if fields["notes"]:
+        lines += ["## 用户补充", "", fields["notes"], ""]
+
     lines += ["## 仍缺少的信息", ""]
     if missing:
         for label in missing:
@@ -147,6 +150,7 @@ def create_draft(
     steps_tried: str | None,
     target_repo: str | None,
     request_id: str,
+    notes: str | None = None,
 ) -> tuple[dict, bool]:
     """Returns (draft, created). A retry with the same key and content returns the original draft."""
     fields = {
@@ -154,8 +158,11 @@ def create_draft(
         "environment": clean(environment),
         "error_output": clean(error_output),
         "steps_tried": clean(steps_tried),
+        "notes": clean(notes),
     }
-    request_hash = text_hash(run_id, fields["title"], fields["environment"], fields["error_output"], fields["steps_tried"])
+    request_hash = text_hash(
+        run_id, fields["title"], fields["environment"], fields["error_output"], fields["steps_tried"], fields["notes"]
+    )
 
     existing = connection.execute("SELECT * FROM issue_drafts WHERE idempotency_key = ?", (idempotency_key,)).fetchone()
     if existing is not None:

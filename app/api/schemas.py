@@ -134,6 +134,9 @@ class IssueDraftRequest(RequestModel):
     environment: str | None = Field(default=None, max_length=2000)
     error_output: str | None = Field(default=None, max_length=10000)
     steps_tried: str | None = Field(default=None, max_length=4000)
+    # Anything else the user wrote that did not go under one of the fields above,
+    # kept verbatim rather than guessed into one of them.
+    notes: str | None = Field(default=None, max_length=4000)
 
 
 class IssueDraftResponse(BaseModel):

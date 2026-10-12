@@ -35,6 +35,8 @@ build request (code) → POST /api/retrieve (repo_id when one repo; query_en whe
 
 **The question is also searched in English.** The service searches the Chinese question and its English translation and fuses the two rankings (RRF); on demo20, within the right repository, @5 went from 58% to 68% with no question getting worse (`docs/progress.md`). The translated text is the settled question, so after a clarification round it is the original question, not the reply. If translation fails or returns nothing, the request carries no `query_en` and retrieval uses the question alone.
 
+**Issue drafts start from a button.** Each accepted answer also has a 整理问题单 button. The flow then asks for 环境 / 报错原文 / 已尝试 in one message, splits the reply by those labels in code (no model involved; text before the first label is kept as a note), and calls `POST /api/issue-drafts`. The reply is a link to the review page; nothing is submitted from the chat. The idempotency key is the run id plus a hash of the details, so a retry returns the same draft and different details make a new one.
+
 **Feedback buttons carry the run id.** Each accepted answer ends with Dify markdown buttons (`<button data-message="...">`); clicking one sends `反馈：<label> run=<run_id>` as the next message, which the flow turns into `POST /api/feedback`. Because the run id is in the message, a click on an older answer is recorded against that answer. Dify's built-in like/dislike is still shown but is not wired to the service.
 
 Request bodies are built with `json.dumps` in code nodes, never by pasting the question into a JSON template, so quotes and newlines in a question cannot break or alter the request.

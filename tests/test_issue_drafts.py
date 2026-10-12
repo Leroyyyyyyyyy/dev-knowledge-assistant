@@ -329,3 +329,12 @@ def test_logout_ends_the_session(app_client, answered_run):
     app_client.cookies.set("dka_session", cookie)
     response = app_client.get(f"/review/{draft_id}", follow_redirects=False)
     assert response.status_code == 303
+
+
+def test_notes_are_kept_verbatim_in_their_own_section(app_client, answered_run):
+    draft = make_draft(app_client, answered_run["run"]["run_id"], notes="换了一台机器也一样").json()
+    assert draft["missing"] == ["环境", "报错原文", "已尝试的步骤"]  # notes fill none of these
+    login(app_client)
+    page = app_client.get(f"/review/{draft['draft_id']}").text
+    assert "## 用户补充\n\n换了一台机器也一样" in page
+

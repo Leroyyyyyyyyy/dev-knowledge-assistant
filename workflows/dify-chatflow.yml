@@ -25,6 +25,15 @@ workflow:
     - pending_question
     value: ''
     value_type: string
+  - description: The run whose answer the user is turning into an Issue, while waiting
+      for their details.
+    id: 9d2c4b7a-1e3f-4a6b-8c5d-7e0f1a2b3c4d
+    name: pending_issue_run
+    selector:
+    - conversation
+    - pending_issue_run
+    value: ''
+    value_type: string
   environment_variables:
   - description: 检索服务地址（固定配置，不来自用户输入）
     id: 66e537ba-22d4-46ec-8266-9b5f8b807c5d
@@ -350,6 +359,70 @@ workflow:
       source: translate
       sourceHandle: source
       target: build_retrieve
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: if_feedback-issue_start-set_issue_pending-target
+      source: if_feedback
+      sourceHandle: issue_start
+      target: set_issue_pending
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: set_issue_pending-source-ans_issue_ask-target
+      source: set_issue_pending
+      sourceHandle: source
+      target: ans_issue_ask
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: if_feedback-issue_details-clear_issue_pending-target
+      source: if_feedback
+      sourceHandle: issue_details
+      target: clear_issue_pending
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: clear_issue_pending-source-submit_draft-target
+      source: clear_issue_pending
+      sourceHandle: source
+      target: submit_draft
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: submit_draft-source-check_draft-target
+      source: submit_draft
+      sourceHandle: source
+      target: check_draft
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: check_draft-source-ans_issue_draft-target
+      source: check_draft
+      sourceHandle: source
+      target: ans_issue_draft
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: if_feedback-issue_cancel-clear_issue_cancel-target
+      source: if_feedback
+      sourceHandle: issue_cancel
+      target: clear_issue_cancel
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data: {}
+      id: clear_issue_cancel-source-ans_issue_cancel-target
+      source: clear_issue_cancel
+      sourceHandle: source
+      target: ans_issue_cancel
       targetHandle: target
       type: custom
       zIndex: 0
@@ -826,8 +899,10 @@ workflow:
           \ % (label, data[\"run_id\"])\n        if variant:\n            lines.append('<button\
           \ data-message=\"%s\" data-variant=\"%s\">%s</button>' % (message, variant,\
           \ label))\n        else:\n            lines.append('<button data-message=\"\
-          %s\">%s</button>' % (message, label))\n    result[\"route\"] = \"ok\"\n\
-          \    result[\"final_text\"] = \"\\n\".join(lines)\n    return result\n"
+          %s\">%s</button>' % (message, label))\n    lines.append(\"\")\n    lines.append('<button\
+          \ data-message=\"整理问题单 run=%s\">整理问题单</button>' % data[\"run_id\"])\n  \
+          \  result[\"route\"] = \"ok\"\n    result[\"final_text\"] = \"\\n\".join(lines)\n\
+          \    return result\n"
         code_language: python3
         desc: ''
         outputs:
@@ -1169,8 +1244,10 @@ workflow:
           \ % (label, data[\"run_id\"])\n        if variant:\n            lines.append('<button\
           \ data-message=\"%s\" data-variant=\"%s\">%s</button>' % (message, variant,\
           \ label))\n        else:\n            lines.append('<button data-message=\"\
-          %s\">%s</button>' % (message, label))\n    result[\"route\"] = \"ok\"\n\
-          \    result[\"final_text\"] = \"\\n\".join(lines)\n    return result\n"
+          %s\">%s</button>' % (message, label))\n    lines.append(\"\")\n    lines.append('<button\
+          \ data-message=\"整理问题单 run=%s\">整理问题单</button>' % data[\"run_id\"])\n  \
+          \  result[\"route\"] = \"ok\"\n    result[\"final_text\"] = \"\\n\".join(lines)\n\
+          \    return result\n"
         code_language: python3
         desc: ''
         outputs:
@@ -1279,21 +1356,61 @@ workflow:
       type: custom
       width: 244
     - data:
-        code: "\ndef main(query: str) -> dict:\n    import json\n    import re\n\n\
-          \    # Feedback buttons under each answer send \"反馈：<label> run=<run_id>\"\
-          .\n    # The run id travels in the message itself, so a click on an older\n\
-          \    # answer's button records feedback for that answer, not the latest\
-          \ one.\n    labels = {\n        \"解决了\": (True, None),\n        \"答案不对\"\
-          : (False, \"wrong_answer\"),\n        \"不完整\": (False, \"incomplete\"),\n\
-          \        \"引用不对\": (False, \"wrong_citation\"),\n        \"不相关\": (False,\
-          \ \"not_relevant\"),\n    }\n    result = {\"kind\": \"question\", \"payload\"\
-          : \"\", \"label\": \"\"}\n    match = re.fullmatch(r\"反馈：(\\S+)\\s+run=([0-9a-f-]{36})\"\
-          , query.strip())\n    if match is None or match.group(1) not in labels:\n\
-          \        return result\n\n    label = match.group(1)\n    resolved, reason\
-          \ = labels[label]\n    body = {\"run_id\": match.group(2), \"resolved\"\
-          : resolved}\n    if reason is not None:\n        body[\"reason\"] = reason\n\
-          \    result[\"kind\"] = \"feedback\"\n    result[\"payload\"] = json.dumps(body)\n\
-          \    result[\"label\"] = label\n    return result\n"
+        code: "\ndef main(query: str, pending_issue_run: str) -> dict:\n    import\
+          \ hashlib\n    import json\n    import re\n\n    text = query.strip()\n\
+          \    result = {\"kind\": \"question\", \"payload\": \"\", \"label\": \"\"\
+          , \"run_id\": \"\"}\n\n    # Feedback buttons: \"反馈：<label> run=<run_id>\"\
+          .\n    labels = {\n        \"解决了\": (True, None),\n        \"答案不对\": (False,\
+          \ \"wrong_answer\"),\n        \"不完整\": (False, \"incomplete\"),\n      \
+          \  \"引用不对\": (False, \"wrong_citation\"),\n        \"不相关\": (False, \"not_relevant\"\
+          ),\n    }\n    match = re.fullmatch(r\"反馈：(\\S+)\\s+run=([0-9a-f-]{36})\"\
+          , text)\n    if match is not None and match.group(1) in labels:\n      \
+          \  resolved, reason = labels[match.group(1)]\n        body = {\"run_id\"\
+          : match.group(2), \"resolved\": resolved}\n        if reason is not None:\n\
+          \            body[\"reason\"] = reason\n        result[\"kind\"] = \"feedback\"\
+          \n        result[\"payload\"] = json.dumps(body)\n        result[\"label\"\
+          ] = match.group(1)\n        return result\n\n    # The Issue button under\
+          \ an answer: \"整理问题单 run=<run_id>\".\n    match = re.fullmatch(r\"整理问题单\\\
+          s+run=([0-9a-f-]{36})\", text)\n    if match is not None:\n        result[\"\
+          kind\"] = \"issue_start\"\n        result[\"run_id\"] = match.group(1)\n\
+          \        return result\n\n    if not pending_issue_run:\n        return\
+          \ result\n\n    if text in (\"取消\", \"取消整理\"):\n        result[\"kind\"\
+          ] = \"issue_cancel\"\n        return result\n\n    # The user's details\
+          \ for the pending Issue. Split by the labels they were\n    # asked to use;\
+          \ nothing is generated or rephrased. Lines after a label\n    # belong to\
+          \ it (a pasted error spans lines). Text before any label is kept\n    #\
+          \ as a note instead of being guessed into a field.\n    fields = [\n   \
+          \     (\"environment\", [\"环境\"]),\n        (\"error_output\", [\"报错原文\"\
+          , \"报错\"]),\n        (\"steps_tried\", [\"已尝试的步骤\", \"已尝试\", \"试过\"]),\n\
+          \    ]\n    empty_words = [\"\", \"没有\", \"无\", \"暂无\", \"none\", \"n/a\"\
+          , \"-\"]\n    buckets = {\"environment\": [], \"error_output\": [], \"steps_tried\"\
+          : []}\n    notes = []\n    current = None\n    skipped = text in (\"跳过\"\
+          , \"跳过，直接生成\")\n    if not skipped:\n        for line in text.splitlines():\n\
+          \            stripped = line.strip()\n            matched = None\n     \
+          \       rest = \"\"\n            for key, names in fields:\n           \
+          \     for name in names:\n                    for separator in (\"：\", \"\
+          :\"):\n                        if matched is None and stripped.startswith(name\
+          \ + separator):\n                            matched = key\n           \
+          \                 rest = stripped[len(name) + 1:].strip()\n            if\
+          \ matched is not None:\n                current = matched\n            \
+          \    if rest:\n                    buckets[current].append(rest)\n     \
+          \       elif current is not None:\n                buckets[current].append(line.rstrip())\n\
+          \            else:\n                notes.append(line.rstrip())\n\n    limits\
+          \ = {\"environment\": 2000, \"error_output\": 10000, \"steps_tried\": 4000,\
+          \ \"notes\": 4000}\n    body = {\"run_id\": pending_issue_run}\n    values\
+          \ = {}\n    for key in buckets:\n        value = \"\\n\".join(buckets[key]).strip()\n\
+          \        if value.lower() in empty_words:\n            value = \"\"\n  \
+          \      values[key] = value\n    values[\"notes\"] = \"\\n\".join(notes).strip()\n\
+          \    if values[\"notes\"].lower() in empty_words:\n        values[\"notes\"\
+          ] = \"\"\n    for key, value in values.items():\n        if value:\n   \
+          \         body[key] = value[:limits[key]]\n\n    # Same run and same details\
+          \ -> same key, so a Dify retry returns the same\n    # draft; different\
+          \ details make a separate draft (spec §7.2).\n    digest = hashlib.sha256(json.dumps(values,\
+          \ ensure_ascii=False, sort_keys=True).encode(\"utf-8\")).hexdigest()[:16]\n\
+          \    body[\"idempotency_key\"] = \"dify-\" + pending_issue_run + \"-\" +\
+          \ digest\n    result[\"kind\"] = \"issue_details\"\n    result[\"run_id\"\
+          ] = pending_issue_run\n    result[\"payload\"] = json.dumps(body, ensure_ascii=False)\n\
+          \    return result\n"
         code_language: python3
         desc: ''
         outputs:
@@ -1306,6 +1423,9 @@ workflow:
           payload:
             children: null
             type: string
+          run_id:
+            children: null
+            type: string
         selected: false
         title: 识别反馈消息
         type: code
@@ -1314,6 +1434,10 @@ workflow:
           - sys
           - query
           variable: query
+        - value_selector:
+          - conversation
+          - pending_issue_run
+          variable: pending_issue_run
       height: 90
       id: route_input
       position:
@@ -1339,9 +1463,42 @@ workflow:
             - kind
           id: 'true'
           logical_operator: and
+        - case_id: issue_start
+          conditions:
+          - comparison_operator: is
+            id: issue_start-cond
+            value: issue_start
+            varType: string
+            variable_selector:
+            - route_input
+            - kind
+          id: issue_start
+          logical_operator: and
+        - case_id: issue_details
+          conditions:
+          - comparison_operator: is
+            id: issue_details-cond
+            value: issue_details
+            varType: string
+            variable_selector:
+            - route_input
+            - kind
+          id: issue_details
+          logical_operator: and
+        - case_id: issue_cancel
+          conditions:
+          - comparison_operator: is
+            id: issue_cancel-cond
+            value: issue_cancel
+            varType: string
+            variable_selector:
+            - route_input
+            - kind
+          id: issue_cancel
+          logical_operator: and
         desc: ''
         selected: false
-        title: 是反馈？
+        title: 是按钮消息？
         type: if-else
       height: 90
       id: if_feedback
@@ -1761,6 +1918,247 @@ workflow:
       positionAbsolute:
         x: 2100
         y: 300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - route_input
+          - run_id
+          variable_selector:
+          - conversation
+          - pending_issue_run
+        selected: false
+        title: 记下要整理的回答
+        type: assigner
+        version: '2'
+      height: 90
+      id: set_issue_pending
+      position:
+        x: 900
+        y: -300
+      positionAbsolute:
+        x: 900
+        y: -300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '好的，把这个回答整理成问题单。请在**一条消息**里按下面的格式补充，没有的写「没有」。我只照原样使用你写的内容，不会替你补：
+
+
+          ```
+
+          环境：
+
+          报错原文：
+
+          已尝试：
+
+          ```
+
+
+          <button data-message="跳过，直接生成">跳过，直接生成</button>
+
+          <button data-message="取消">取消</button>'
+        desc: ''
+        selected: false
+        title: 请用户补充问题单信息
+        type: answer
+        variables: []
+      height: 90
+      id: ans_issue_ask
+      position:
+        x: 1200
+        y: -300
+      positionAbsolute:
+        x: 1200
+        y: -300
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: clear
+          value: null
+          variable_selector:
+          - conversation
+          - pending_issue_run
+        selected: false
+        title: 清空待整理的回答
+        type: assigner
+        version: '2'
+      height: 90
+      id: clear_issue_pending
+      position:
+        x: 900
+        y: -600
+      positionAbsolute:
+        x: 900
+        y: -600
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config:
+            api_key: '{{#env.DKA_SERVICE_TOKEN#}}'
+            type: bearer
+          type: api-key
+        body:
+          data:
+          - id: issue-draft-body
+            key: ''
+            type: text
+            value: '{{#route_input.payload#}}'
+          type: json
+        desc: ''
+        headers: Content-Type:application/json
+        method: post
+        params: ''
+        retry_config:
+          enabled: false
+          max_retries: 1
+          retry_interval: 1000
+        selected: false
+        timeout:
+          connect: 5
+          read: 10
+          write: 10
+        title: 生成草稿 /api/issue-drafts
+        type: http-request
+        url: '{{#env.DKA_BASE_URL#}}/api/issue-drafts'
+        variables: []
+      height: 90
+      id: submit_draft
+      position:
+        x: 1200
+        y: -600
+      positionAbsolute:
+        x: 1200
+        y: -600
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "\ndef main(status_code: int, body: str) -> dict:\n    import json\n\
+          \    try:\n        data = json.loads(body)\n    except Exception:\n    \
+          \    if \"ERR_CONNECT_FAIL\" in body or \"ERR_READ_TIMEOUT\" in body:\n\
+          \            return {\"text\": \"连不上服务，问题单没有生成。\"}\n        return {\"text\"\
+          : \"草稿接口返回了无法解析的内容（HTTP %s），问题单没有生成。\" % status_code}\n\n    if status_code\
+          \ in (200, 201):\n        lines = [\"问题单草稿已生成（第 %s 版）：[打开确认页](%s)\" % (data[\"\
+          revision\"], data[\"review_url\"]), \"\"]\n        if data[\"missing\"]:\n\
+          \            lines.append(\"未提供：\" + \"、\".join(data[\"missing\"]) + \"\
+          。可以在确认页里补上。\")\n        for warning in data[\"warnings\"]:\n           \
+          \ lines.append(\"⚠ \" + warning + \"，提交到公开仓库前请在确认页里删掉或改写。\")\n        if\
+          \ not data[\"target_repo\"]:\n            lines.append(\"服务还没有配置目标仓库，这份草稿暂时不能提交。\"\
+          )\n        lines.append(\"\")\n        lines.append(\"这里不会自动提交：请在确认页检查内容，确认后再提交到\
+          \ GitHub。\")\n        return {\"text\": \"\\n\".join(lines)}\n    if status_code\
+          \ == 404:\n        return {\"text\": \"找不到这次回答的检索记录（request_id %s），问题单没有生成。\"\
+          \ % data.get(\"request_id\", \"?\")}\n    if status_code == 409 and data.get(\"\
+          code\") == \"NO_ANSWER_FOR_RUN\":\n        return {\"text\": \"这次提问没有通过校验的回答，不能整理成问题单。\"\
+          }\n    return {\"text\": \"草稿接口返回错误 %s：%s（request_id %s）。\" % (status_code,\
+          \ data.get(\"code\", \"?\"), data.get(\"request_id\", \"?\"))}\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          text:
+            children: null
+            type: string
+        selected: false
+        title: 检查草稿结果
+        type: code
+        variables:
+        - value_selector:
+          - submit_draft
+          - status_code
+          variable: status_code
+        - value_selector:
+          - submit_draft
+          - body
+          variable: body
+      height: 90
+      id: check_draft
+      position:
+        x: 1500
+        y: -600
+      positionAbsolute:
+        x: 1500
+        y: -600
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#check_draft.text#}}'
+        desc: ''
+        selected: false
+        title: 问题单草稿
+        type: answer
+        variables: []
+      height: 90
+      id: ans_issue_draft
+      position:
+        x: 1800
+        y: -600
+      positionAbsolute:
+        x: 1800
+        y: -600
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: clear
+          value: null
+          variable_selector:
+          - conversation
+          - pending_issue_run
+        selected: false
+        title: 取消整理问题单
+        type: assigner
+        version: '2'
+      height: 90
+      id: clear_issue_cancel
+      position:
+        x: 900
+        y: -900
+      positionAbsolute:
+        x: 900
+        y: -900
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: 已取消，没有生成问题单。
+        desc: ''
+        selected: false
+        title: 已取消
+        type: answer
+        variables: []
+      height: 90
+      id: ans_issue_cancel
+      position:
+        x: 1200
+        y: -900
+      positionAbsolute:
+        x: 1200
+        y: -900
       sourcePosition: right
       targetPosition: left
       type: custom
