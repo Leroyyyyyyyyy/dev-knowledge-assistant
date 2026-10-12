@@ -1,0 +1,2455 @@
+{
+  "date": "2026-10-12",
+  "index_version": "v20261005083840019845",
+  "embed_model": "BAAI/bge-m3",
+  "dataset_version": "v1",
+  "translations": "queries_en_deepseek.json",
+  "fusion": {
+    "depth": 20,
+    "rrf_k": 60
+  },
+  "arms": {
+    "zh": {
+      "mean": {
+        "1": 0.1956521739130435,
+        "3": 0.5,
+        "5": 0.6304347826086957,
+        "10": 0.8260869565217391
+      },
+      "queries": [
+        {
+          "id": "h01",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "创建工单时填了一个不存在的 asset_id，接口会返回什么？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.3479996919631958
+        },
+        {
+          "id": "h02",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单可以从哪些状态改派给别人？改派之后是什么状态？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L67-L97",
+          "top1_distance": 0.40318435430526733
+        },
+        {
+          "id": "h03",
+          "type": "config",
+          "metric": "hit",
+          "query": "完成工单时 resolution 能不能只填几个空格？最长能写多少字？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/models.py#L91-L93",
+          "top1_distance": 0.4150705933570862
+        },
+        {
+          "id": "h04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "为什么一个已经有工单的资产删不掉？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.420712411403656
+        },
+        {
+          "id": "h05",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "工单的 status 和 priority 只能取哪些值？这个限制是在哪几层做的？",
+          "group_ranks": [
+            2,
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:migrations/versions/1878cb7a8324_work_order_state_machine_columns_and_.py#L28-L28",
+          "top1_distance": 0.4028198719024658
+        },
+        {
+          "id": "h06",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 本地开发时数据库连接串从哪里读？没配的话默认连哪里？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.3918478488922119
+        },
+        {
+          "id": "h07",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单刚创建时写的那条审计事件，old_status 是什么？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:README.md#L81-L126",
+          "top1_distance": 0.3946666717529297
+        },
+        {
+          "id": "h08",
+          "type": "stale",
+          "metric": "coverage",
+          "query": "改派工单时能不能附上改派原因？",
+          "group_ranks": [
+            1,
+            5
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L37-L45",
+          "top1_distance": 0.4103788733482361
+        },
+        {
+          "id": "h09",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的乐观并发控制（expected_version）是怎么实现的？",
+          "group_ranks": [
+            6
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.4382745623588562
+        },
+        {
+          "id": "h10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "fieldops 的健康检查接口是哪个？它会去连数据库吗？",
+          "group_ranks": [
+            10
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.34796082973480225
+        },
+        {
+          "id": "h11",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 跑数据库迁移时，连接地址是写在 alembic.ini 里的吗？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.40029484033584595
+        },
+        {
+          "id": "h12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "fieldops 的集成测试为什么不会在数据库里留下数据？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.4262670874595642
+        },
+        {
+          "id": "h13",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 默认订阅哪个 MQTT topic？连哪个端口？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.env.example#L1-L12",
+          "top1_distance": 0.391357958316803
+        },
+        {
+          "id": "h14",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "上报遥测时 observed_at 不带时区会怎样？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_models.py#L9-L14",
+          "top1_distance": 0.4110677242279053
+        },
+        {
+          "id": "h15",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "copilot 用 OpenAI 时最多调用几轮工具？超过了会怎样？",
+          "group_ranks": [
+            2,
+            1
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/agent.py#L146-L256",
+          "top1_distance": 0.3856315612792969
+        },
+        {
+          "id": "h16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "查一台不存在的设备的历史遥测，接口返回什么？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L121-L170",
+          "top1_distance": 0.40712350606918335
+        },
+        {
+          "id": "h17",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "同一个 copilot 处置动作被审批两次会怎样？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.43209367990493774
+        },
+        {
+          "id": "h18",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 建议隔离一台设备之前，必须先拿到什么证据？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_copilot.py#L12-L61",
+          "top1_distance": 0.4180966019630432
+        },
+        {
+          "id": "h19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "copilot 的调查记录和审批结果会存进 PostgreSQL 吗？API 重启后还在吗？",
+          "group_ranks": [
+            10
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L121-L170",
+          "top1_distance": 0.3901377320289612
+        },
+        {
+          "id": "h20",
+          "type": "howto",
+          "metric": "hit",
+          "query": "mineops 的模拟器怎么只把数据打印到终端、不连 MQTT？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docker-compose.yml#L41-L68",
+          "top1_distance": 0.37662023305892944
+        },
+        {
+          "id": "h21",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "模拟器生成的故障大概多久出现一次？有哪几种故障码？",
+          "group_ranks": [
+            4,
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L202-L249",
+          "top1_distance": 0.38069117069244385
+        },
+        {
+          "id": "h22",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 的 Docker 镜像用的是哪个 Python 版本？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:Makefile#L1-L23",
+          "top1_distance": 0.37819337844848633
+        },
+        {
+          "id": "h23",
+          "type": "ambiguous",
+          "metric": "coverage",
+          "query": "数据库用的是哪个版本的 PostgreSQL？",
+          "group_ranks": [
+            1,
+            6
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 0.5,
+            "10": 1.0
+          },
+          "top1": "fieldops:docker-compose.yml#L1-L21",
+          "top1_distance": 0.4477446675300598
+        }
+      ]
+    },
+    "en": {
+      "mean": {
+        "1": 0.41304347826086957,
+        "3": 0.5434782608695652,
+        "5": 0.6956521739130435,
+        "10": 0.7608695652173914
+      },
+      "queries": [
+        {
+          "id": "h01",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "创建工单时填了一个不存在的 asset_id，接口会返回什么？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.3130667209625244
+        },
+        {
+          "id": "h02",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单可以从哪些状态改派给别人？改派之后是什么状态？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L67-L97",
+          "top1_distance": 0.43096309900283813
+        },
+        {
+          "id": "h03",
+          "type": "config",
+          "metric": "hit",
+          "query": "完成工单时 resolution 能不能只填几个空格？最长能写多少字？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L1-L12",
+          "top1_distance": 0.49822908639907837
+        },
+        {
+          "id": "h04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "为什么一个已经有工单的资产删不掉？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/models/work_order.py#L21-L62",
+          "top1_distance": 0.3436168432235718
+        },
+        {
+          "id": "h05",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "工单的 status 和 priority 只能取哪些值？这个限制是在哪几层做的？",
+          "group_ranks": [
+            null,
+            9
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.5
+          },
+          "top1": "fieldops:docs/adr/001-explicit-state-transitions.md#L42-L45",
+          "top1_distance": 0.4648476243019104
+        },
+        {
+          "id": "h06",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 本地开发时数据库连接串从哪里读？没配的话默认连哪里？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.3909699320793152
+        },
+        {
+          "id": "h07",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单刚创建时写的那条审计事件，old_status 是什么？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/api/work_orders.py#L85-L112",
+          "top1_distance": 0.4000312089920044
+        },
+        {
+          "id": "h08",
+          "type": "stale",
+          "metric": "coverage",
+          "query": "改派工单时能不能附上改派原因？",
+          "group_ranks": [
+            1,
+            4
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L37-L45",
+          "top1_distance": 0.33871179819107056
+        },
+        {
+          "id": "h09",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的乐观并发控制（expected_version）是怎么实现的？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:docs/adr/001-explicit-state-transitions.md#L42-L45",
+          "top1_distance": 0.432092547416687
+        },
+        {
+          "id": "h10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "fieldops 的健康检查接口是哪个？它会去连数据库吗？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.3305097222328186
+        },
+        {
+          "id": "h11",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 跑数据库迁移时，连接地址是写在 alembic.ini 里的吗？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:alembic.ini#L1-L50",
+          "top1_distance": 0.41441434621810913
+        },
+        {
+          "id": "h12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "fieldops 的集成测试为什么不会在数据库里留下数据？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.44670671224594116
+        },
+        {
+          "id": "h13",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 默认订阅哪个 MQTT topic？连哪个端口？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.env.example#L1-L12",
+          "top1_distance": 0.40886789560317993
+        },
+        {
+          "id": "h14",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "上报遥测时 observed_at 不带时区会怎样？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_models.py#L9-L14",
+          "top1_distance": 0.3208739161491394
+        },
+        {
+          "id": "h15",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "copilot 用 OpenAI 时最多调用几轮工具？超过了会怎样？",
+          "group_ranks": [
+            4,
+            1
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/agent.py#L146-L256",
+          "top1_distance": 0.35749274492263794
+        },
+        {
+          "id": "h16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "查一台不存在的设备的历史遥测，接口返回什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/api.py#L27-L193",
+          "top1_distance": 0.3756110668182373
+        },
+        {
+          "id": "h17",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "同一个 copilot 处置动作被审批两次会怎样？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.5010840892791748
+        },
+        {
+          "id": "h18",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 建议隔离一台设备之前，必须先拿到什么证据？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_copilot.py#L12-L61",
+          "top1_distance": 0.4011489748954773
+        },
+        {
+          "id": "h19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "copilot 的调查记录和审批结果会存进 PostgreSQL 吗？API 重启后还在吗？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:README.md#L162-L173",
+          "top1_distance": 0.3906806707382202
+        },
+        {
+          "id": "h20",
+          "type": "howto",
+          "metric": "hit",
+          "query": "mineops 的模拟器怎么只把数据打印到终端、不连 MQTT？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docker-compose.yml#L41-L68",
+          "top1_distance": 0.34203165769577026
+        },
+        {
+          "id": "h21",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "模拟器生成的故障大概多久出现一次？有哪几种故障码？",
+          "group_ranks": [
+            1,
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/simulator.py#L29-L80",
+          "top1_distance": 0.3593635559082031
+        },
+        {
+          "id": "h22",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 的 Docker 镜像用的是哪个 Python 版本？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:Makefile#L1-L23",
+          "top1_distance": 0.3775925636291504
+        },
+        {
+          "id": "h23",
+          "type": "ambiguous",
+          "metric": "coverage",
+          "query": "数据库用的是哪个版本的 PostgreSQL？",
+          "group_ranks": [
+            1,
+            4
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:docker-compose.yml#L1-L21",
+          "top1_distance": 0.44507336616516113
+        }
+      ]
+    },
+    "rrf": {
+      "mean": {
+        "1": 0.2391304347826087,
+        "3": 0.5869565217391305,
+        "5": 0.717391304347826,
+        "10": 0.7391304347826086
+      },
+      "queries": [
+        {
+          "id": "h01",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "创建工单时填了一个不存在的 asset_id，接口会返回什么？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.3130667209625244
+        },
+        {
+          "id": "h02",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单可以从哪些状态改派给别人？改派之后是什么状态？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L67-L97",
+          "top1_distance": 0.40318435430526733
+        },
+        {
+          "id": "h03",
+          "type": "config",
+          "metric": "hit",
+          "query": "完成工单时 resolution 能不能只填几个空格？最长能写多少字？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/models.py#L91-L93",
+          "top1_distance": 0.4150705933570862
+        },
+        {
+          "id": "h04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "为什么一个已经有工单的资产删不掉？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.37146371603012085
+        },
+        {
+          "id": "h05",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "工单的 status 和 priority 只能取哪些值？这个限制是在哪几层做的？",
+          "group_ranks": [
+            6,
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.5,
+            "10": 1.0
+          },
+          "top1": "fieldops:migrations/versions/1878cb7a8324_work_order_state_machine_columns_and_.py#L28-L28",
+          "top1_distance": 0.4028198719024658
+        },
+        {
+          "id": "h06",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 本地开发时数据库连接串从哪里读？没配的话默认连哪里？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.3909699320793152
+        },
+        {
+          "id": "h07",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单刚创建时写的那条审计事件，old_status 是什么？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:README.md#L81-L126",
+          "top1_distance": 0.3946666717529297
+        },
+        {
+          "id": "h08",
+          "type": "stale",
+          "metric": "coverage",
+          "query": "改派工单时能不能附上改派原因？",
+          "group_ranks": [
+            1,
+            2
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L37-L45",
+          "top1_distance": 0.33871179819107056
+        },
+        {
+          "id": "h09",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的乐观并发控制（expected_version）是怎么实现的？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.4382745623588562
+        },
+        {
+          "id": "h10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "fieldops 的健康检查接口是哪个？它会去连数据库吗？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.3305097222328186
+        },
+        {
+          "id": "h11",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 跑数据库迁移时，连接地址是写在 alembic.ini 里的吗？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.40029484033584595
+        },
+        {
+          "id": "h12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "fieldops 的集成测试为什么不会在数据库里留下数据？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.4262670874595642
+        },
+        {
+          "id": "h13",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 默认订阅哪个 MQTT topic？连哪个端口？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.env.example#L1-L12",
+          "top1_distance": 0.391357958316803
+        },
+        {
+          "id": "h14",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "上报遥测时 observed_at 不带时区会怎样？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_models.py#L9-L14",
+          "top1_distance": 0.3208739161491394
+        },
+        {
+          "id": "h15",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "copilot 用 OpenAI 时最多调用几轮工具？超过了会怎样？",
+          "group_ranks": [
+            3,
+            1
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/agent.py#L146-L256",
+          "top1_distance": 0.35749274492263794
+        },
+        {
+          "id": "h16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "查一台不存在的设备的历史遥测，接口返回什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/api.py#L27-L193",
+          "top1_distance": 0.3756110668182373
+        },
+        {
+          "id": "h17",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "同一个 copilot 处置动作被审批两次会怎样？",
+          "group_ranks": [
+            null,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.43209367990493774
+        },
+        {
+          "id": "h18",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 建议隔离一台设备之前，必须先拿到什么证据？",
+          "group_ranks": [
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_copilot.py#L12-L61",
+          "top1_distance": 0.4011489748954773
+        },
+        {
+          "id": "h19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "copilot 的调查记录和审批结果会存进 PostgreSQL 吗？API 重启后还在吗？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.3975907564163208
+        },
+        {
+          "id": "h20",
+          "type": "howto",
+          "metric": "hit",
+          "query": "mineops 的模拟器怎么只把数据打印到终端、不连 MQTT？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docker-compose.yml#L41-L68",
+          "top1_distance": 0.34203165769577026
+        },
+        {
+          "id": "h21",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "模拟器生成的故障大概多久出现一次？有哪几种故障码？",
+          "group_ranks": [
+            3,
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L202-L249",
+          "top1_distance": 0.38069117069244385
+        },
+        {
+          "id": "h22",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 的 Docker 镜像用的是哪个 Python 版本？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:Makefile#L1-L23",
+          "top1_distance": 0.3775925636291504
+        },
+        {
+          "id": "h23",
+          "type": "ambiguous",
+          "metric": "coverage",
+          "query": "数据库用的是哪个版本的 PostgreSQL？",
+          "group_ranks": [
+            1,
+            5
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:docker-compose.yml#L1-L21",
+          "top1_distance": 0.44507336616516113
+        }
+      ]
+    },
+    "zh_scoped": {
+      "mean": {
+        "1": 0.1956521739130435,
+        "3": 0.5652173913043478,
+        "5": 0.7391304347826086,
+        "10": 0.8913043478260869
+      },
+      "queries": [
+        {
+          "id": "h01",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "创建工单时填了一个不存在的 asset_id，接口会返回什么？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.3479996919631958
+        },
+        {
+          "id": "h02",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单可以从哪些状态改派给别人？改派之后是什么状态？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L67-L97",
+          "top1_distance": 0.40318435430526733
+        },
+        {
+          "id": "h03",
+          "type": "config",
+          "metric": "hit",
+          "query": "完成工单时 resolution 能不能只填几个空格？最长能写多少字？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L60-L64",
+          "top1_distance": 0.42594385147094727
+        },
+        {
+          "id": "h04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "为什么一个已经有工单的资产删不掉？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.420712411403656
+        },
+        {
+          "id": "h05",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "工单的 status 和 priority 只能取哪些值？这个限制是在哪几层做的？",
+          "group_ranks": [
+            2,
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:migrations/versions/1878cb7a8324_work_order_state_machine_columns_and_.py#L28-L28",
+          "top1_distance": 0.4028198719024658
+        },
+        {
+          "id": "h06",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 本地开发时数据库连接串从哪里读？没配的话默认连哪里？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.3918478488922119
+        },
+        {
+          "id": "h07",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单刚创建时写的那条审计事件，old_status 是什么？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:README.md#L81-L126",
+          "top1_distance": 0.3946666717529297
+        },
+        {
+          "id": "h08",
+          "type": "stale",
+          "metric": "coverage",
+          "query": "改派工单时能不能附上改派原因？",
+          "group_ranks": [
+            1,
+            5
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L37-L45",
+          "top1_distance": 0.4103788733482361
+        },
+        {
+          "id": "h09",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的乐观并发控制（expected_version）是怎么实现的？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.4382745623588562
+        },
+        {
+          "id": "h10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "fieldops 的健康检查接口是哪个？它会去连数据库吗？",
+          "group_ranks": [
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.34796082973480225
+        },
+        {
+          "id": "h11",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 跑数据库迁移时，连接地址是写在 alembic.ini 里的吗？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.40029484033584595
+        },
+        {
+          "id": "h12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "fieldops 的集成测试为什么不会在数据库里留下数据？",
+          "group_ranks": [
+            10
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.4262670874595642
+        },
+        {
+          "id": "h13",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 默认订阅哪个 MQTT topic？连哪个端口？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.env.example#L1-L12",
+          "top1_distance": 0.391357958316803
+        },
+        {
+          "id": "h14",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "上报遥测时 observed_at 不带时区会怎样？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_models.py#L9-L14",
+          "top1_distance": 0.4110677242279053
+        },
+        {
+          "id": "h15",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "copilot 用 OpenAI 时最多调用几轮工具？超过了会怎样？",
+          "group_ranks": [
+            2,
+            1
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/agent.py#L146-L256",
+          "top1_distance": 0.3856315612792969
+        },
+        {
+          "id": "h16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "查一台不存在的设备的历史遥测，接口返回什么？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L121-L170",
+          "top1_distance": 0.40712350606918335
+        },
+        {
+          "id": "h17",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "同一个 copilot 处置动作被审批两次会怎样？",
+          "group_ranks": [
+            9,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.5
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.43209367990493774
+        },
+        {
+          "id": "h18",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 建议隔离一台设备之前，必须先拿到什么证据？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_copilot.py#L12-L61",
+          "top1_distance": 0.4180966019630432
+        },
+        {
+          "id": "h19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "copilot 的调查记录和审批结果会存进 PostgreSQL 吗？API 重启后还在吗？",
+          "group_ranks": [
+            10
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L121-L170",
+          "top1_distance": 0.3901377320289612
+        },
+        {
+          "id": "h20",
+          "type": "howto",
+          "metric": "hit",
+          "query": "mineops 的模拟器怎么只把数据打印到终端、不连 MQTT？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docker-compose.yml#L41-L68",
+          "top1_distance": 0.37662023305892944
+        },
+        {
+          "id": "h21",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "模拟器生成的故障大概多久出现一次？有哪几种故障码？",
+          "group_ranks": [
+            4,
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L202-L249",
+          "top1_distance": 0.38069117069244385
+        },
+        {
+          "id": "h22",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 的 Docker 镜像用的是哪个 Python 版本？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:Makefile#L1-L23",
+          "top1_distance": 0.37819337844848633
+        },
+        {
+          "id": "h23",
+          "type": "ambiguous",
+          "metric": "coverage",
+          "query": "数据库用的是哪个版本的 PostgreSQL？",
+          "group_ranks": [
+            1,
+            2
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:docker-compose.yml#L1-L21",
+          "top1_distance": 0.4477446675300598
+        }
+      ]
+    },
+    "en_scoped": {
+      "mean": {
+        "1": 0.41304347826086957,
+        "3": 0.5652173913043478,
+        "5": 0.6956521739130435,
+        "10": 0.8260869565217391
+      },
+      "queries": [
+        {
+          "id": "h01",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "创建工单时填了一个不存在的 asset_id，接口会返回什么？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.3130667209625244
+        },
+        {
+          "id": "h02",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单可以从哪些状态改派给别人？改派之后是什么状态？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L67-L97",
+          "top1_distance": 0.43096309900283813
+        },
+        {
+          "id": "h03",
+          "type": "config",
+          "metric": "hit",
+          "query": "完成工单时 resolution 能不能只填几个空格？最长能写多少字？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L1-L12",
+          "top1_distance": 0.49822908639907837
+        },
+        {
+          "id": "h04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "为什么一个已经有工单的资产删不掉？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/models/work_order.py#L21-L62",
+          "top1_distance": 0.3436168432235718
+        },
+        {
+          "id": "h05",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "工单的 status 和 priority 只能取哪些值？这个限制是在哪几层做的？",
+          "group_ranks": [
+            null,
+            8
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.5
+          },
+          "top1": "fieldops:docs/adr/001-explicit-state-transitions.md#L42-L45",
+          "top1_distance": 0.4648476243019104
+        },
+        {
+          "id": "h06",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 本地开发时数据库连接串从哪里读？没配的话默认连哪里？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.3909699320793152
+        },
+        {
+          "id": "h07",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单刚创建时写的那条审计事件，old_status 是什么？",
+          "group_ranks": [
+            7
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/api/work_orders.py#L85-L112",
+          "top1_distance": 0.4000312089920044
+        },
+        {
+          "id": "h08",
+          "type": "stale",
+          "metric": "coverage",
+          "query": "改派工单时能不能附上改派原因？",
+          "group_ranks": [
+            1,
+            4
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L37-L45",
+          "top1_distance": 0.33871179819107056
+        },
+        {
+          "id": "h09",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的乐观并发控制（expected_version）是怎么实现的？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:docs/adr/001-explicit-state-transitions.md#L42-L45",
+          "top1_distance": 0.432092547416687
+        },
+        {
+          "id": "h10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "fieldops 的健康检查接口是哪个？它会去连数据库吗？",
+          "group_ranks": [
+            10
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.3305097222328186
+        },
+        {
+          "id": "h11",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 跑数据库迁移时，连接地址是写在 alembic.ini 里的吗？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:alembic.ini#L1-L50",
+          "top1_distance": 0.41441434621810913
+        },
+        {
+          "id": "h12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "fieldops 的集成测试为什么不会在数据库里留下数据？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.44670671224594116
+        },
+        {
+          "id": "h13",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 默认订阅哪个 MQTT topic？连哪个端口？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.env.example#L1-L12",
+          "top1_distance": 0.40886789560317993
+        },
+        {
+          "id": "h14",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "上报遥测时 observed_at 不带时区会怎样？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_models.py#L9-L14",
+          "top1_distance": 0.3208739161491394
+        },
+        {
+          "id": "h15",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "copilot 用 OpenAI 时最多调用几轮工具？超过了会怎样？",
+          "group_ranks": [
+            4,
+            1
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 0.5,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/agent.py#L146-L256",
+          "top1_distance": 0.35749274492263794
+        },
+        {
+          "id": "h16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "查一台不存在的设备的历史遥测，接口返回什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/api.py#L27-L193",
+          "top1_distance": 0.3756110668182373
+        },
+        {
+          "id": "h17",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "同一个 copilot 处置动作被审批两次会怎样？",
+          "group_ranks": [
+            8,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.5
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.5010840892791748
+        },
+        {
+          "id": "h18",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 建议隔离一台设备之前，必须先拿到什么证据？",
+          "group_ranks": [
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_copilot.py#L12-L61",
+          "top1_distance": 0.4011489748954773
+        },
+        {
+          "id": "h19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "copilot 的调查记录和审批结果会存进 PostgreSQL 吗？API 重启后还在吗？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:README.md#L162-L173",
+          "top1_distance": 0.3906806707382202
+        },
+        {
+          "id": "h20",
+          "type": "howto",
+          "metric": "hit",
+          "query": "mineops 的模拟器怎么只把数据打印到终端、不连 MQTT？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docker-compose.yml#L41-L68",
+          "top1_distance": 0.34203165769577026
+        },
+        {
+          "id": "h21",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "模拟器生成的故障大概多久出现一次？有哪几种故障码？",
+          "group_ranks": [
+            1,
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/simulator.py#L29-L80",
+          "top1_distance": 0.3593635559082031
+        },
+        {
+          "id": "h22",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 的 Docker 镜像用的是哪个 Python 版本？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:Makefile#L1-L23",
+          "top1_distance": 0.3775925636291504
+        },
+        {
+          "id": "h23",
+          "type": "ambiguous",
+          "metric": "coverage",
+          "query": "数据库用的是哪个版本的 PostgreSQL？",
+          "group_ranks": [
+            1,
+            2
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:docker-compose.yml#L1-L21",
+          "top1_distance": 0.44507336616516113
+        }
+      ]
+    },
+    "rrf_scoped": {
+      "mean": {
+        "1": 0.2391304347826087,
+        "3": 0.6521739130434783,
+        "5": 0.717391304347826,
+        "10": 0.8478260869565217
+      },
+      "queries": [
+        {
+          "id": "h01",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "创建工单时填了一个不存在的 asset_id，接口会返回什么？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.3130667209625244
+        },
+        {
+          "id": "h02",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单可以从哪些状态改派给别人？改派之后是什么状态？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/domain/work_order_status.py#L67-L97",
+          "top1_distance": 0.40318435430526733
+        },
+        {
+          "id": "h03",
+          "type": "config",
+          "metric": "hit",
+          "query": "完成工单时 resolution 能不能只填几个空格？最长能写多少字？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L60-L64",
+          "top1_distance": 0.42594385147094727
+        },
+        {
+          "id": "h04",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "为什么一个已经有工单的资产删不掉？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:tests/integration/test_work_orders_api.py#L37-L151",
+          "top1_distance": 0.37146371603012085
+        },
+        {
+          "id": "h05",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "工单的 status 和 priority 只能取哪些值？这个限制是在哪几层做的？",
+          "group_ranks": [
+            6,
+            4
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.5,
+            "10": 1.0
+          },
+          "top1": "fieldops:migrations/versions/1878cb7a8324_work_order_state_machine_columns_and_.py#L28-L28",
+          "top1_distance": 0.4028198719024658
+        },
+        {
+          "id": "h06",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 本地开发时数据库连接串从哪里读？没配的话默认连哪里？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.3909699320793152
+        },
+        {
+          "id": "h07",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "工单刚创建时写的那条审计事件，old_status 是什么？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "fieldops:README.md#L81-L126",
+          "top1_distance": 0.3946666717529297
+        },
+        {
+          "id": "h08",
+          "type": "stale",
+          "metric": "coverage",
+          "query": "改派工单时能不能附上改派原因？",
+          "group_ranks": [
+            1,
+            2
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:app/schemas/work_order.py#L37-L45",
+          "top1_distance": 0.33871179819107056
+        },
+        {
+          "id": "h09",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "fieldops 的乐观并发控制（expected_version）是怎么实现的？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:pyproject.toml#L1-L49",
+          "top1_distance": 0.4382745623588562
+        },
+        {
+          "id": "h10",
+          "type": "howto",
+          "metric": "hit",
+          "query": "fieldops 的健康检查接口是哪个？它会去连数据库吗？",
+          "group_ranks": [
+            6
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.github/workflows/ci.yml#L1-L49",
+          "top1_distance": 0.3305097222328186
+        },
+        {
+          "id": "h11",
+          "type": "config",
+          "metric": "hit",
+          "query": "fieldops 跑数据库迁移时，连接地址是写在 alembic.ini 里的吗？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.40029484033584595
+        },
+        {
+          "id": "h12",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "fieldops 的集成测试为什么不会在数据库里留下数据？",
+          "group_ranks": [
+            10
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:.env.example#L1-L4",
+          "top1_distance": 0.4262670874595642
+        },
+        {
+          "id": "h13",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 默认订阅哪个 MQTT topic？连哪个端口？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:.env.example#L1-L12",
+          "top1_distance": 0.391357958316803
+        },
+        {
+          "id": "h14",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "上报遥测时 observed_at 不带时区会怎样？",
+          "group_ranks": [
+            2
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_models.py#L9-L14",
+          "top1_distance": 0.3208739161491394
+        },
+        {
+          "id": "h15",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "copilot 用 OpenAI 时最多调用几轮工具？超过了会怎样？",
+          "group_ranks": [
+            3,
+            1
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/copilot/agent.py#L146-L256",
+          "top1_distance": 0.35749274492263794
+        },
+        {
+          "id": "h16",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "查一台不存在的设备的历史遥测，接口返回什么？",
+          "group_ranks": [
+            1
+          ],
+          "scores": {
+            "1": 1.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:src/mineops/api.py#L27-L193",
+          "top1_distance": 0.3756110668182373
+        },
+        {
+          "id": "h17",
+          "type": "multi_file",
+          "metric": "coverage",
+          "query": "同一个 copilot 处置动作被审批两次会怎样？",
+          "group_ranks": [
+            8,
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.5
+          },
+          "top1": "mineops:docs/adr/0001-idempotent-event-ingestion.md#L1-L40",
+          "top1_distance": 0.43209367990493774
+        },
+        {
+          "id": "h18",
+          "type": "code_location",
+          "metric": "hit",
+          "query": "copilot 建议隔离一台设备之前，必须先拿到什么证据？",
+          "group_ranks": [
+            5
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:tests/test_copilot.py#L12-L61",
+          "top1_distance": 0.4011489748954773
+        },
+        {
+          "id": "h19",
+          "type": "not_implemented",
+          "metric": "hit",
+          "query": "copilot 的调查记录和审批结果会存进 PostgreSQL 吗？API 重启后还在吗？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docs/adr/0002-evidence-grounded-operations-copilot.md#L1-L48",
+          "top1_distance": 0.3975907564163208
+        },
+        {
+          "id": "h20",
+          "type": "howto",
+          "metric": "hit",
+          "query": "mineops 的模拟器怎么只把数据打印到终端、不连 MQTT？",
+          "group_ranks": [
+            null
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 0.0,
+            "5": 0.0,
+            "10": 0.0
+          },
+          "top1": "mineops:docker-compose.yml#L41-L68",
+          "top1_distance": 0.34203165769577026
+        },
+        {
+          "id": "h21",
+          "type": "code_location",
+          "metric": "coverage",
+          "query": "模拟器生成的故障大概多久出现一次？有哪几种故障码？",
+          "group_ranks": [
+            3,
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:docs/LEARNING_GUIDE.zh-CN.md#L202-L249",
+          "top1_distance": 0.38069117069244385
+        },
+        {
+          "id": "h22",
+          "type": "config",
+          "metric": "hit",
+          "query": "mineops 的 Docker 镜像用的是哪个 Python 版本？",
+          "group_ranks": [
+            3
+          ],
+          "scores": {
+            "1": 0.0,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "mineops:Makefile#L1-L23",
+          "top1_distance": 0.3775925636291504
+        },
+        {
+          "id": "h23",
+          "type": "ambiguous",
+          "metric": "coverage",
+          "query": "数据库用的是哪个版本的 PostgreSQL？",
+          "group_ranks": [
+            1,
+            2
+          ],
+          "scores": {
+            "1": 0.5,
+            "3": 1.0,
+            "5": 1.0,
+            "10": 1.0
+          },
+          "top1": "fieldops:docker-compose.yml#L1-L21",
+          "top1_distance": 0.44507336616516113
+        }
+      ]
+    }
+  }
+}

@@ -73,8 +73,9 @@
 10. ~~M2 收尾~~ **已完成（2026-10-10）**：澄清步骤和反馈按钮。改流程的方法：在 Dify 里改（编辑器，或把改好的 graph 同步进草稿），在 Dify 里测完再导出，覆盖 `workflows/dify-chatflow.yml`。提交的文件必须是导出结果，不能手改。会话变量的 id 必须是 UUID（NOTES 22）。
 11. **Dify 环境**：在本仓库上级目录 `../dify-1.17.1/docker`（只稀疏检出了 `docker/`）。启动：先开 Docker Desktop，再在那个目录执行 `docker compose up -d`；网页地址 `http://localhost:8090`。它的 `.env` 里改了 `SECRET_KEY`、两个端口绑定、`SSRF_PROXY_ALLOW_PRIVATE_DOMAINS=host.docker.internal`、`APP_WEB_URL` 和 `SERVICE_API_URL`（都设为 `http://localhost:8090`，否则 Dify 显示的链接会少端口）；插件端口通过 `docker-compose.override.yaml` 绑定到本机（直接改变量会让 api 容器起不来，见 NOTES 和 `workflows/README.md`）。Dify 里有两个应用：「研发知识助手」（主应用，2026-10-10 已发布新版，Web 入口是 `http://localhost:8090/chat/<code>`）和「研发知识助手（重新导入验证）」（只用来验证，可以删掉）。Web 应用和 API 只跑**已发布**的版本，改完草稿要记得发布。Dify 的登录会话默认 60 分钟过期，刷新页面就会自动续上。忘了 Dify 密码，可以在 api 容器里运行 `flask reset-password` 自己重置（交互式，要自己输入新密码）；改邮箱用 `flask reset-email`。
 
-12. **M3 下一步**：真实提交（需要用户提供测试仓库 `DKA_ISSUE_REPO` 和只有 Issues 权限的 fine-grained token `DKA_GITHUB_TOKEN`，再设 `DKA_ISSUE_SUBMIT_ENABLED=true`）。之后做 M5（不做 M4）。
-13. **检索**：d02 已查清（措辞和语言差异，见 progress.md 的中英文检索实验和 NOTES 26）。中文 + 英文译文一起检索，用 DeepSeek 的译文重跑后结论成立（限定仓库时每个 k 都不变差，@5 58% → 68%），已接进服务和 Dify（`query_en` + RRF，见 progress.md）。Dify 里新建了「查询翻译（评测用）」工作流，只用于生成评测译文；然后做 M3（Issue 草稿和确认提交，需要用户提供测试仓库和只有 Issues 权限的 fine-grained token）。
+12. **M5 进行中**：留出测试集 heldout24 已建好并跑过（见 progress.md 的 M5 一节）：先澄清仓库的提升复现了，中英文合并的提升只复现了一部分。下一步：回答层评测、失败分析、部署文档。
+13. **M3 收尾**：真实提交（需要用户提供测试仓库 `DKA_ISSUE_REPO` 和只有 Issues 权限的 fine-grained token `DKA_GITHUB_TOKEN`，再设 `DKA_ISSUE_SUBMIT_ENABLED=true`）。之后做 M5（不做 M4）。
+14. **检索**：d02 已查清（措辞和语言差异，见 progress.md 的中英文检索实验和 NOTES 26）。中文 + 英文译文一起检索，用 DeepSeek 的译文重跑后结论成立（限定仓库时每个 k 都不变差，@5 58% → 68%），已接进服务和 Dify（`query_en` + RRF，见 progress.md）。Dify 里新建了「查询翻译（评测用）」工作流，只用于生成评测译文；然后做 M3（Issue 草稿和确认提交，需要用户提供测试仓库和只有 Issues 权限的 fine-grained token）。
 
 ## 7. 约定
 

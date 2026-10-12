@@ -1,0 +1,524 @@
+{
+ "name": "heldout24",
+ "version": "v1",
+ "frozen_on": "2026-10-12",
+ "role": "test",
+ "note": "Held-out test set: drafted by the development assistant from reading the code after every retrieval decision so far (embedding model, clarification, Chinese + English fusion) had been made on demo20, and never used to tune anything. Approved by the author. Not from user trials. Same evidence rules as demo20: a chunk is relevant to a span when repo and path match and their line ranges overlap; a group is satisfied when any of its spans is hit; one group -> hit@k, several -> coverage@k; empty evidence -> excluded from retrieval metrics. 'stale' = a comment or document that no longer matches the code.",
+ "repos": {
+  "fieldops": "1b5fe9c0ec5bc6df447edd673712cf75bd5447a8",
+  "mineops": "85f5da0705718b7d8e6248aa6a2bc12dd9caf09c"
+ },
+ "types": [
+  "code_location",
+  "config",
+  "howto",
+  "multi_file",
+  "ambiguous",
+  "not_implemented",
+  "unanswerable",
+  "stale"
+ ],
+ "queries": [
+  {
+   "id": "h01",
+   "type": "code_location",
+   "query": "创建工单时填了一个不存在的 asset_id，接口会返回什么？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/api/work_orders.py",
+      "start_line": 53,
+      "end_line": 62,
+      "anchor": "code=\"ASSET_NOT_FOUND\""
+     }
+    ]
+   ],
+   "answer": "404 ASSET_NOT_FOUND。插入时外键 fk_work_orders_asset_id_assets 报错，create_work_order 识别出是这个外键后转成 404，而不是 500。"
+  },
+  {
+   "id": "h02",
+   "type": "code_location",
+   "query": "工单可以从哪些状态改派给别人？改派之后是什么状态？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/domain/work_order_status.py",
+      "start_line": 85,
+      "end_line": 88,
+      "anchor": "Command.REASSIGN: Transition("
+     },
+     {
+      "repo": "fieldops",
+      "path": "app/domain/work_order_status.py",
+      "start_line": 80,
+      "end_line": 82,
+      "anchor": "REASSIGN lands on ASSIGNED from either side"
+     }
+    ]
+   ],
+   "answer": "ASSIGNED 或 IN_PROGRESS 可以 reassign，结果都回到 ASSIGNED：新负责人需要自己重新 start。"
+  },
+  {
+   "id": "h03",
+   "type": "config",
+   "query": "完成工单时 resolution 能不能只填几个空格？最长能写多少字？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/schemas/work_order.py",
+      "start_line": 10,
+      "end_line": 12,
+      "anchor": "strip_whitespace=True, min_length=1, max_length=2000"
+     }
+    ]
+   ],
+   "answer": "不能。FreeText 先去掉首尾空白，再要求至少 1 个字符，最多 2000 个字符；全是空格会被当作空值拒绝（422）。"
+  },
+  {
+   "id": "h04",
+   "type": "code_location",
+   "query": "为什么一个已经有工单的资产删不掉？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/models/work_order.py",
+      "start_line": 45,
+      "end_line": 52,
+      "anchor": "ondelete=\"RESTRICT\""
+     }
+    ]
+   ],
+   "answer": "work_orders.asset_id 的外键是 ON DELETE RESTRICT，不是 CASCADE：删除有历史的资产会把审计记录一起删掉，所以数据库直接拒绝。"
+  },
+  {
+   "id": "h05",
+   "type": "multi_file",
+   "query": "工单的 status 和 priority 只能取哪些值？这个限制是在哪几层做的？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/domain/work_order_status.py",
+      "start_line": 13,
+      "end_line": 27,
+      "anchor": "class WorkOrderStatus(StrEnum):"
+     }
+    ],
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/models/work_order.py",
+      "start_line": 35,
+      "end_line": 43,
+      "anchor": "ck_work_orders_status"
+     }
+    ]
+   ],
+   "answer": "取值来自领域模块的 WorkOrderStatus / Priority 枚举；数据库层还有用同一个枚举生成的 CHECK 约束（ck_work_orders_status、ck_work_orders_priority），防止种子脚本或手工 UPDATE 写进未知的值。哪些转换合法只在应用层判断。"
+  },
+  {
+   "id": "h06",
+   "type": "config",
+   "query": "fieldops 本地开发时数据库连接串从哪里读？没配的话默认连哪里？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/core/config.py",
+      "start_line": 6,
+      "end_line": 22,
+      "anchor": "database_url: str"
+     },
+     {
+      "repo": "fieldops",
+      "path": ".env.example",
+      "start_line": 1,
+      "end_line": 4,
+      "anchor": "DATABASE_URL=postgresql+asyncpg://"
+     }
+    ]
+   ],
+   "answer": "从环境变量或 .env 读 DATABASE_URL（pydantic-settings），必须用 asyncpg 驱动；默认是 postgresql+asyncpg://fieldops:fieldops@localhost:5432/fieldops，和 docker-compose 里的账号一致。"
+  },
+  {
+   "id": "h07",
+   "type": "code_location",
+   "query": "工单刚创建时写的那条审计事件，old_status 是什么？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/models/work_order_event.py",
+      "start_line": 56,
+      "end_line": 57,
+      "anchor": "Null only for CREATE"
+     },
+     {
+      "repo": "fieldops",
+      "path": "app/api/work_orders.py",
+      "start_line": 63,
+      "end_line": 65,
+      "anchor": "WorkOrderEventType.CREATE, old_status=None"
+     }
+    ]
+   ],
+   "answer": "是 null。创建时记一条 CREATE 事件，old_status=None，因为在此之前工单还没有状态；old_status 只有 CREATE 事件为空。"
+  },
+  {
+   "id": "h08",
+   "type": "stale",
+   "query": "改派工单时能不能附上改派原因？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/schemas/work_order.py",
+      "start_line": 37,
+      "end_line": 45,
+      "anchor": "No reason field yet"
+     }
+    ],
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/api/work_orders.py",
+      "start_line": 159,
+      "end_line": 161,
+      "anchor": "_apply(session, work_order, Command.REASSIGN)"
+     }
+    ]
+   ],
+   "answer": "不能。ReassignRequest 只有 assignee_id，注释说原因字段「随审计记录一起加」，但审计记录（work_order_events.reason）其实已经有了，改派时仍然没有传 reason。注释已经过时，应该指出这一点，不能说可以填原因。"
+  },
+  {
+   "id": "h09",
+   "type": "not_implemented",
+   "query": "fieldops 的乐观并发控制（expected_version）是怎么实现的？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "docs/adr/001-explicit-state-transitions.md",
+      "start_line": 45,
+      "end_line": 45,
+      "anchor": "deliberately deferred"
+     },
+     {
+      "repo": "fieldops",
+      "path": "README.md",
+      "start_line": 105,
+      "end_line": 105,
+      "anchor": "optimistic concurrency"
+     }
+    ]
+   ],
+   "answer": "还没实现。ADR-001 写明 expected_version / 409 VERSION_CONFLICT 被刻意推迟，README 把它列在 Still to come；现在 version 只是每次命令加一。不能编造实现。"
+  },
+  {
+   "id": "h10",
+   "type": "howto",
+   "query": "fieldops 的健康检查接口是哪个？它会去连数据库吗？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "app/api/health.py",
+      "start_line": 3,
+      "end_line": 9,
+      "anchor": "Must not touch the database"
+     }
+    ]
+   ],
+   "answer": "GET /health/live，只证明进程活着，返回 {\"status\": \"ok\"}，明确不访问数据库。"
+  },
+  {
+   "id": "h11",
+   "type": "config",
+   "query": "fieldops 跑数据库迁移时，连接地址是写在 alembic.ini 里的吗？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "migrations/env.py",
+      "start_line": 18,
+      "end_line": 20,
+      "anchor": "config.set_main_option(\"sqlalchemy.url\", get_settings().database_url)"
+     }
+    ]
+   ],
+   "answer": "不是。migrations/env.py 在运行时用应用配置里的 database_url 覆盖 sqlalchemy.url，连接地址只有一个来源（环境变量 / .env），不写在 alembic.ini 里。"
+  },
+  {
+   "id": "h12",
+   "type": "code_location",
+   "query": "fieldops 的集成测试为什么不会在数据库里留下数据？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "tests/conftest.py",
+      "start_line": 16,
+      "end_line": 33,
+      "anchor": "transaction.rollback()"
+     },
+     {
+      "repo": "fieldops",
+      "path": "tests/conftest.py",
+      "start_line": 36,
+      "end_line": 48,
+      "anchor": "join_transaction_mode=\"create_savepoint\""
+     }
+    ]
+   ],
+   "answer": "每个测试在一个外层事务里跑，结束时整体回滚；应用的会话用 create_savepoint 加入这个事务，所以处理函数里的 commit 只是释放保存点，测试结束后全部撤销。"
+  },
+  {
+   "id": "h13",
+   "type": "config",
+   "query": "mineops 默认订阅哪个 MQTT topic？连哪个端口？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/config.py",
+      "start_line": 17,
+      "end_line": 19,
+      "anchor": "mqtt_topic: str = \"mineops/v1/telemetry\""
+     },
+     {
+      "repo": "mineops",
+      "path": ".env.example",
+      "start_line": 3,
+      "end_line": 5,
+      "anchor": "MINEOPS_MQTT_TOPIC=mineops/v1/telemetry"
+     }
+    ]
+   ],
+   "answer": "topic 是 mineops/v1/telemetry，默认连 localhost:1883；都可以用 MINEOPS_MQTT_* 环境变量覆盖。"
+  },
+  {
+   "id": "h14",
+   "type": "code_location",
+   "query": "上报遥测时 observed_at 不带时区会怎样？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/models.py",
+      "start_line": 25,
+      "end_line": 29,
+      "anchor": "observed_at must include a timezone"
+     }
+    ]
+   ],
+   "answer": "校验失败：TelemetryEvent 的 model_validator 要求 observed_at 带时区，否则抛出 observed_at must include a timezone，HTTP 接口返回 422，MQTT 入口记一条 invalid_telemetry 警告并丢弃。"
+  },
+  {
+   "id": "h15",
+   "type": "multi_file",
+   "query": "copilot 用 OpenAI 时最多调用几轮工具？超过了会怎样？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/config.py",
+      "start_line": 27,
+      "end_line": 27,
+      "anchor": "copilot_max_tool_rounds: int = Field(default=6"
+     }
+    ],
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/agent.py",
+      "start_line": 182,
+      "end_line": 183,
+      "anchor": "copilot exceeded the configured tool-round limit"
+     }
+    ]
+   ],
+   "answer": "默认 6 轮（MINEOPS_COPILOT_MAX_TOOL_ROUNDS，1–20）；超过时 OpenAIOperationsAgent 抛出 RuntimeError「copilot exceeded the configured tool-round limit」，不会继续调用。"
+  },
+  {
+   "id": "h16",
+   "type": "code_location",
+   "query": "查一台不存在的设备的历史遥测，接口返回什么？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/api.py",
+      "start_line": 139,
+      "end_line": 148,
+      "anchor": "detail=\"device not found\""
+     }
+    ]
+   ],
+   "answer": "404 device not found：device_history 查不到任何事件时直接返回 404。"
+  },
+  {
+   "id": "h17",
+   "type": "multi_file",
+   "query": "同一个 copilot 处置动作被审批两次会怎样？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/service.py",
+      "start_line": 91,
+      "end_line": 92,
+      "anchor": "action has already been reviewed"
+     }
+    ],
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/api.py",
+      "start_line": 187,
+      "end_line": 188,
+      "anchor": "status_code=409"
+     }
+    ]
+   ],
+   "answer": "第二次被拒绝：服务层发现状态已经不是 proposed，抛 ValueError「action has already been reviewed」，接口把它转成 409。"
+  },
+  {
+   "id": "h18",
+   "type": "code_location",
+   "query": "copilot 建议隔离一台设备之前，必须先拿到什么证据？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/service.py",
+      "start_line": 122,
+      "end_line": 128,
+      "anchor": "device isolation requires recent device-history evidence"
+     }
+    ]
+   ],
+   "answer": "isolate_device 的 evidence_ids 里必须包含该设备的 device-history:<设备ID> 证据，否则 _validate_evidence_references 抛错，结果不会返回。"
+  },
+  {
+   "id": "h19",
+   "type": "not_implemented",
+   "query": "copilot 的调查记录和审批结果会存进 PostgreSQL 吗？API 重启后还在吗？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/copilot/service.py",
+      "start_line": 47,
+      "end_line": 47,
+      "anchor": "self._runs: dict[UUID, InvestigationReport] = {}"
+     },
+     {
+      "repo": "mineops",
+      "path": "docs/AI_NATIVE_SCORECARD.md",
+      "start_line": 24,
+      "end_line": 24,
+      "anchor": "runs are stored only in API memory"
+     }
+    ]
+   ],
+   "answer": "不会，只存在 API 进程内存的字典里，重启就没了。Scorecard 把持久化审计日志标为 Missing，ROADMAP Milestone 1 才计划存进 PostgreSQL。"
+  },
+  {
+   "id": "h20",
+   "type": "howto",
+   "query": "mineops 的模拟器怎么只把数据打印到终端、不连 MQTT？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/simulator.py",
+      "start_line": 114,
+      "end_line": 125,
+      "anchor": "choices=[\"stdout\", \"mqtt\"], default=\"stdout\""
+     }
+    ]
+   ],
+   "answer": "直接运行 python -m mineops.simulator：--transport 默认就是 stdout，事件以 JSON 一行一条打印；可以加 --cycles N 只跑 N 轮。"
+  },
+  {
+   "id": "h21",
+   "type": "code_location",
+   "query": "模拟器生成的故障大概多久出现一次？有哪几种故障码？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/simulator.py",
+      "start_line": 60,
+      "end_line": 65,
+      "anchor": "[\"ENG_TEMP_HIGH\", \"VIBRATION_HIGH\"]"
+     }
+    ],
+    [
+     {
+      "repo": "mineops",
+      "path": "src/mineops/simulator.py",
+      "start_line": 30,
+      "end_line": 38,
+      "anchor": "fault_probability: float = 0.02"
+     }
+    ]
+   ],
+   "answer": "每台设备每条事件有 2% 概率带故障（fault_probability=0.02），故障码是 ENG_TEMP_HIGH（温度加 35°C）或 VIBRATION_HIGH（振动加 16 mm/s）。"
+  },
+  {
+   "id": "h22",
+   "type": "config",
+   "query": "mineops 的 Docker 镜像用的是哪个 Python 版本？",
+   "evidence": [
+    [
+     {
+      "repo": "mineops",
+      "path": "Dockerfile",
+      "start_line": 1,
+      "end_line": 1,
+      "anchor": "FROM python:3.12-slim"
+     }
+    ]
+   ],
+   "answer": "python:3.12-slim。"
+  },
+  {
+   "id": "h23",
+   "type": "ambiguous",
+   "query": "数据库用的是哪个版本的 PostgreSQL？",
+   "evidence": [
+    [
+     {
+      "repo": "fieldops",
+      "path": "docker-compose.yml",
+      "start_line": 1,
+      "end_line": 9,
+      "anchor": "image: postgres:18"
+     }
+    ],
+    [
+     {
+      "repo": "mineops",
+      "path": "docker-compose.yml",
+      "start_line": 1,
+      "end_line": 7,
+      "anchor": "image: postgres:16-alpine"
+     }
+    ]
+   ],
+   "answer": "两个仓库不同，应先澄清或分别回答：fieldops 用 postgres:18，mineops 用 postgres:16-alpine。"
+  },
+  {
+   "id": "h24",
+   "type": "unanswerable",
+   "query": "mineops 的车载设备固件 OTA 升级流程是怎样的？",
+   "evidence": [],
+   "answer": "资料中没有固件或 OTA 升级相关内容，应说明找不到依据，不能编造。检索层不计分。"
+  }
+ ]
+}

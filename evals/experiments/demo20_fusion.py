@@ -13,8 +13,9 @@ Arms (each scored with its own top_k per cut-off):
   *_scoped      the same, restricted to the repositories the evidence is in
                 (what the service gets once the repository is settled)
 
-Translations: a file in evals/datasets/demo20/ (see each file's note).
-Usage: uv run python -m evals.experiments.demo20_fusion [queries_en_llm.json | queries_en_deepseek.json]
+Translations: a file next to the dataset (see each file's note).
+Usage: uv run python -m evals.experiments.demo20_fusion [translations.json] [dataset]
+  dataset defaults to demo20 (the development set); heldout24 is the test set.
 """
 
 import json
@@ -30,7 +31,7 @@ from app.retrieval.encoder import SentenceTransformerEncoder
 from app.retrieval.service import FUSION_DEPTH, RRF_K, fuse, search
 from app.settings import Settings
 from app.storage.db import active_version, connect
-from evals.experiments.demo20_retrieval import DATASET_DIR, load_dataset, mean_at, score_query
+from evals.experiments.demo20_retrieval import mean_at, score_query
 from evals.experiments.demo20_scope import labeled_repos, take_turns
 from evals.scoring import K_VALUES
 
@@ -62,12 +63,16 @@ def run_arm(arm: str, collection, zh_embedding, en_embedding, repos, top_k: int)
 
 def main() -> None:
     translations_name = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_TRANSLATIONS
-    translations_path = DATASET_DIR / translations_name
+    dataset_name = sys.argv[2] if len(sys.argv) > 2 else "demo20"
+    dataset_dir = REPO_ROOT / "evals" / "datasets" / dataset_name
+    translations_path = dataset_dir / translations_name
     # Keep the first report's name for the default file, so earlier results stay where they were.
-    if translations_name == DEFAULT_TRANSLATIONS:
+    if dataset_name == "demo20" and translations_name == DEFAULT_TRANSLATIONS:
         report_path = REPO_ROOT / "evals" / "reports" / "demo20_fusion.json"
     else:
-        report_path = REPO_ROOT / "evals" / "reports" / f"demo20_fusion_{translations_path.stem.removeprefix('queries_en_')}.json"
+        translator = translations_path.stem.removeprefix("queries_en_")
+        report_path = REPO_ROOT / "evals" / "reports" / f"{dataset_name}_fusion_{translator}.json"
+    dataset = json.loads((dataset_dir / "eval_set.json").read_text(encoding="utf-8"))
 
     settings = Settings()
     connection = connect(settings.db_path)
@@ -75,7 +80,6 @@ def main() -> None:
     connection.close()
     manifest = json.loads(version_row["manifest"])
 
-    dataset = load_dataset()
     for repo_id, frozen_commit in dataset["repos"].items():
         if manifest[repo_id]["commit"] != frozen_commit:
             raise SystemExit(f"active index has {repo_id}@{manifest[repo_id]['commit']}, demo20 is frozen at {frozen_commit}")
@@ -100,7 +104,7 @@ def main() -> None:
                 row["scores"][k] = per_k[k]["scores"][k]
             rows[arm].append(row)
 
-    print(f"translations {translations_name}")
+    print(f"dataset {dataset_name}, translations {translations_name}")
     print(f"index {version_row['version']} ({version_row['embed_model']}), {len(scored)} scored queries\n")
     header = "arm".ljust(12)
     for k in K_VALUES:
