@@ -215,8 +215,9 @@ def test_review_page_shows_the_draft_with_protective_headers(app_client, answere
     assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
     assert response.headers["x-frame-options"] == "DENY"
     assert response.headers["cache-control"] == "no-store"
-    # The confirm button exists but submission is not wired up yet.
-    assert re.search(r"<button[^>]*disabled[^>]*>确认并提交到 GitHub</button>", response.text)
+    # Submission is off by default: the button is disabled and says why.
+    assert re.search(r"<button[^>]*disabled[^>]*>确认第 1 版并提交到 GitHub</button>", response.text)
+    assert "DKA_ISSUE_SUBMIT_ENABLED" in response.text
 
 
 def test_edit_saves_a_new_revision_and_keeps_the_old_one(app_client, answered_run, workspace):

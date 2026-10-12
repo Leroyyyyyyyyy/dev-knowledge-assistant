@@ -47,6 +47,11 @@ class Settings(BaseSettings):
     session_hours: int = Field(default=8, ge=1)
     # Set true when served over HTTPS, so the session cookie is never sent in clear.
     cookie_secure: bool = False
+    # Off by default: nothing reaches GitHub until this is switched on on purpose.
+    issue_submit_enabled: bool = False
+    # Fine-grained token limited to issue_repo, with Issues read and write only.
+    github_token: str | None = None
+    github_api_url: str = "https://api.github.com"
 
     @property
     def db_path(self) -> Path:

@@ -157,6 +157,30 @@ MIGRATIONS = {
         expires_at  TEXT NOT NULL
     );
     """,
+    7: """
+    -- Submission (M3). Which revision was sent, and what reconciliation found.
+    ALTER TABLE issue_drafts ADD COLUMN submitted_revision INTEGER;
+    ALTER TABLE issue_drafts ADD COLUMN reconcile_result TEXT
+        CHECK (reconcile_result IN ('found', 'not_found', 'error'));
+    ALTER TABLE issue_drafts ADD COLUMN reconciled_at TEXT;
+
+    -- One row per attempt to create the Issue on GitHub. outcome is NULL while
+    -- the call is in flight; the partial unique index allows only one such row
+    -- per draft, a second guard behind the conditional status update.
+    CREATE TABLE issue_submissions (
+        attempt_id   TEXT PRIMARY KEY,
+        draft_id     TEXT NOT NULL REFERENCES issue_drafts (draft_id),
+        revision     INTEGER NOT NULL,
+        body_hash    TEXT NOT NULL,   -- of exactly what was sent, marker included
+        target_repo  TEXT NOT NULL,
+        started_at   TEXT NOT NULL,
+        finished_at  TEXT,
+        outcome      TEXT CHECK (outcome IN ('created', 'failed', 'unknown')),
+        detail       TEXT
+    );
+    CREATE UNIQUE INDEX one_open_submission_per_draft
+        ON issue_submissions (draft_id) WHERE outcome IS NULL;
+    """,
 }
 
 SCHEMA_VERSION = max(MIGRATIONS)

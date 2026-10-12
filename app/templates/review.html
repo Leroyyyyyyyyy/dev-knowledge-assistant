@@ -44,11 +44,43 @@
 {% endif %}
 
 <h2>确认提交</h2>
-<div class="panel">
-  <p>确认的是<strong>第 {{ draft.revision }} 版</strong>（指纹 <code>{{ draft.body_hash[:12] }}</code>），提交到 <strong>{{ draft.target_repo or "未配置的仓库" }}</strong>。</p>
-  <div class="actions">
-    <button class="primary" type="button" disabled>确认并提交到 GitHub</button>
-    <span class="muted">提交功能还没接入：需要测试仓库和只有 Issues 权限的 token。</span>
-  </div>
+{% if draft.status == "created" %}
+<div class="notice ok">已在 GitHub 创建：<a href="{{ draft.issue_url }}" rel="noopener noreferrer">{{ draft.issue_url }}</a>（提交的是第 {{ draft.submitted_revision or draft.revision }} 版）</div>
+{% if draft.failure_reason %}<div class="notice warn">{{ draft.failure_reason }}</div>{% endif %}
+{% elif draft.status == "submitting" %}
+<div class="notice warn">正在提交，请稍后刷新页面查看结果。不要重复点击。</div>
+{% elif draft.status == "unknown" %}
+<div class="notice warn">
+  <p><strong>提交结果未知。</strong>{{ draft.failure_reason or "" }}</p>
+  <p>Issue 可能已经创建，所以不能直接重新提交。先对账：在 {{ draft.target_repo }} 的 Issue 里查找这份草稿的隐藏标记。</p>
 </div>
+<div class="actions">
+  <form class="inline" method="post" action="/review/{{ draft.draft_id }}/reconcile">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="primary" type="submit">对账</button>
+  </form>
+  {% if draft.reconcile_result == "not_found" %}
+  <form class="inline" method="post" action="/review/{{ draft.draft_id }}/mark-not-created">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit">我已在仓库里确认没有创建，允许重新提交</button>
+  </form>
+  {% endif %}
+</div>
+{% else %}
+{% if draft.status == "failed" and draft.failure_reason %}
+<div class="notice warn">上次提交没有成功：{{ draft.failure_reason }}</div>
+{% endif %}
+<div class="panel">
+  <p>确认的是<strong>第 {{ draft.revision }} 版</strong>（指纹 <code>{{ draft.body_hash[:12] }}</code>），提交到 <strong>{{ draft.target_repo or "未配置的仓库" }}</strong>。正文末尾会加一行隐藏标记，用于事后对账。</p>
+  {% for blocker in blockers %}<p class="muted">不能提交：{{ blocker }}。</p>{% endfor %}
+  <form method="post" action="/review/{{ draft.draft_id }}/submit">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="revision" value="{{ draft.revision }}">
+    <input type="hidden" name="body_hash" value="{{ draft.body_hash }}">
+    <div class="actions">
+      <button class="primary" type="submit"{% if blockers %} disabled{% endif %}>确认第 {{ draft.revision }} 版并提交到 GitHub</button>
+    </div>
+  </form>
+</div>
+{% endif %}
 {% endblock %}

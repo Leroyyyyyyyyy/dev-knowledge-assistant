@@ -34,6 +34,7 @@ from app.api.schemas import (
 from app.feedback import NoAnswerForRun, submit_feedback
 from app.indexing.build import collection_name
 from app.issues.drafts import IdempotencyConflict, create_draft
+from app.issues.submit import recover_interrupted
 from app.retrieval.encoder import Encoder
 from app.retrieval.service import EncoderMismatch, NoActiveIndex, UnknownRepo, retrieve
 from app.settings import Settings
@@ -63,16 +64,29 @@ def create_app(
     settings: Settings | None = None,
     encoder: Encoder | None = None,
     chroma_client=None,
+    github_client=None,
 ) -> FastAPI:
-    """Build the app. Tests pass a fake encoder and a temp-dir Chroma client."""
+    """Build the app. Tests pass a fake encoder, a temp-dir Chroma client and a fake GitHub client."""
     settings = settings or Settings()
     if not settings.service_token or len(settings.service_token) < MIN_TOKEN_LENGTH:
         raise RuntimeError(f"DKA_SERVICE_TOKEN must be set to at least {MIN_TOKEN_LENGTH} characters")
     expected_auth = f"Bearer {settings.service_token}".encode("utf-8")
 
+    if github_client is None and settings.github_token:
+        from app.issues.github import HttpGitHubClient
+
+        github_client = HttpGitHubClient(settings.github_token, settings.github_api_url)
+
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         init_db(settings.db_path)
+        connection = connect(settings.db_path)
+        try:
+            interrupted = recover_interrupted(connection)
+        finally:
+            connection.close()
+        if interrupted:
+            logger.warning("%d Issue submission(s) were interrupted by a restart; marked unknown for reconciliation", interrupted)
         app.state.chroma = chroma_client or chromadb.PersistentClient(path=str(settings.chroma_dir))
         if encoder is not None:
             app.state.encoder = encoder
@@ -319,7 +333,7 @@ def create_app(
         )
         return JSONResponse(status_code=201 if created else 200, content=result.model_dump())
 
-    app.include_router(review_router(settings, get_db))
+    app.include_router(review_router(settings, get_db, github_client))
 
     return app
 

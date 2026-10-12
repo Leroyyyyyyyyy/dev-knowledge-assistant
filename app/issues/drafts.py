@@ -221,6 +221,11 @@ def get_draft(connection: sqlite3.Connection, draft_id: str) -> dict:
         "missing": json.loads(draft["missing_fields"]),
         "warnings": warnings_for(revision["title"] + "\n" + revision["body"]),
         "issue_url": draft["issue_url"],
+        "issue_number": draft["issue_number"],
+        "failure_reason": draft["failure_reason"],
+        "submitted_revision": draft["submitted_revision"],
+        "reconcile_result": draft["reconcile_result"],
+        "reconciled_at": draft["reconciled_at"],
         "created_at": draft["created_at"],
         "updated_at": draft["updated_at"],
     }

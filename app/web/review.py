@@ -16,10 +16,11 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.issues.drafts import DraftLocked, DraftNotFound, StaleRevision, edit_draft, get_draft
+from app.issues.submit import NotReconcilable, SubmitRefused, mark_not_created, reconcile_draft, submit_draft
 from app.settings import Settings
 
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).resolve().parents[1] / "templates"))
@@ -71,7 +72,7 @@ def safe_next(target: str | None) -> str:
     return "/review"
 
 
-def review_router(settings: Settings, get_db) -> APIRouter:
+def review_router(settings: Settings, get_db, github_client=None) -> APIRouter:
     router = APIRouter(include_in_schema=False)
 
     def password_configured() -> bool:
@@ -177,6 +178,15 @@ def review_router(settings: Settings, get_db) -> APIRouter:
             draft = get_draft(connection, draft_id)
         except DraftNotFound:
             return page(request, "message.html", {"title": "找不到草稿", "message": "这个草稿不存在。", "back": "/review"}, 404)
+        blockers = []
+        if not settings.issue_submit_enabled:
+            blockers.append("服务没有开启提交（DKA_ISSUE_SUBMIT_ENABLED）")
+        if github_client is None:
+            blockers.append("没有配置 GitHub token（DKA_GITHUB_TOKEN）")
+        if not draft["target_repo"]:
+            blockers.append("草稿没有目标仓库（DKA_ISSUE_REPO）")
+        elif draft["target_repo"] != settings.issue_repo:
+            blockers.append(f"草稿的目标仓库 {draft['target_repo']} 不是服务当前允许的仓库")
         return page(
             request,
             "review.html",
@@ -187,6 +197,7 @@ def review_router(settings: Settings, get_db) -> APIRouter:
                 "configured_repo": settings.issue_repo,
                 "csrf_token": session["csrf_token"],
                 "saved": bool(saved),
+                "blockers": blockers,
             },
         )
 
@@ -219,5 +230,89 @@ def review_router(settings: Settings, get_db) -> APIRouter:
             message = "标题和正文都不能为空。"
             return page(request, "message.html", {"title": "没有保存", "message": message, "back": f"/review/{draft_id}"}, 422)
         return redirect(f"/review/{draft_id}?saved=1")
+
+    def operator_action(request: Request, connection: sqlite3.Connection, draft_id: str, csrf_token: str):
+        """Shared checks for the POST actions: logged in, valid CSRF, draft exists."""
+        session = current_session(request, connection)
+        if session is None:
+            return None, login_redirect(request)
+        if not csrf_ok(session, csrf_token):
+            message = "表单已过期，请刷新页面后重试。没有执行任何操作。"
+            return None, page(request, "message.html", {"title": "请求无效", "message": message, "back": f"/review/{draft_id}"}, 403)
+        try:
+            get_draft(connection, draft_id)
+        except DraftNotFound:
+            return None, page(request, "message.html", {"title": "找不到草稿", "message": "这个草稿不存在。", "back": "/review"}, 404)
+        return session, None
+
+    @router.post("/review/{draft_id}/submit")
+    def submit(
+        request: Request,
+        draft_id: str,
+        csrf_token: str = Form(""),
+        revision: int = Form(...),
+        body_hash: str = Form(""),
+        connection: sqlite3.Connection = Depends(get_db),
+    ):
+        session, refusal = operator_action(request, connection, draft_id, csrf_token)
+        if refusal is not None:
+            return refusal
+        try:
+            submit_draft(
+                connection,
+                github_client,
+                draft_id=draft_id,
+                confirmed_revision=revision,
+                confirmed_hash=body_hash,
+                allowed_repo=settings.issue_repo,
+                enabled=settings.issue_submit_enabled,
+            )
+        except SubmitRefused as exc:
+            return page(request, "message.html", {"title": "没有提交", "message": str(exc), "back": f"/review/{draft_id}"}, 409)
+        return redirect(f"/review/{draft_id}")
+
+    @router.post("/review/{draft_id}/reconcile")
+    def reconcile(request: Request, draft_id: str, csrf_token: str = Form(""), connection: sqlite3.Connection = Depends(get_db)):
+        session, refusal = operator_action(request, connection, draft_id, csrf_token)
+        if refusal is not None:
+            return refusal
+        try:
+            reconcile_draft(connection, github_client, draft_id)
+        except NotReconcilable as exc:
+            return page(request, "message.html", {"title": "不能对账", "message": str(exc), "back": f"/review/{draft_id}"}, 409)
+        return redirect(f"/review/{draft_id}")
+
+    @router.post("/review/{draft_id}/mark-not-created")
+    def not_created(request: Request, draft_id: str, csrf_token: str = Form(""), connection: sqlite3.Connection = Depends(get_db)):
+        session, refusal = operator_action(request, connection, draft_id, csrf_token)
+        if refusal is not None:
+            return refusal
+        try:
+            mark_not_created(connection, draft_id)
+        except NotReconcilable as exc:
+            return page(request, "message.html", {"title": "不能标记", "message": str(exc), "back": f"/review/{draft_id}"}, 409)
+        return redirect(f"/review/{draft_id}")
+
+    @router.get("/review/{draft_id}/status")
+    def status(request: Request, draft_id: str, connection: sqlite3.Connection = Depends(get_db)):
+        session = current_session(request, connection)
+        if session is None:
+            return JSONResponse({"code": "UNAUTHORIZED", "message": "log in on the review page"}, status_code=401)
+        try:
+            draft = get_draft(connection, draft_id)
+        except DraftNotFound:
+            return JSONResponse({"code": "DRAFT_NOT_FOUND", "message": f"no draft {draft_id}"}, status_code=404)
+        return JSONResponse(
+            {
+                "draft_id": draft["draft_id"],
+                "status": draft["status"],
+                "revision": draft["revision"],
+                "submitted_revision": draft["submitted_revision"],
+                "issue_url": draft["issue_url"],
+                "failure_reason": draft["failure_reason"],
+                "reconcile_result": draft["reconcile_result"],
+            },
+            headers={"Cache-Control": "no-store"},
+        )
 
     return router
